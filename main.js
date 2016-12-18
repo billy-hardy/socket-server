@@ -8,13 +8,15 @@ wss.on('connection', function connection(ws) {
         console.log('received: %s', message);
         let json = JSON.parse(message);
         if(json.recipient) {
-         // todo: send to recipient
+            console.log("Sending message to client: " + json.recipient);
+            // todo: send to recipient
         } else {
-        wss.clients.forEach(function(client) {
-            if(ws != client) {
-                client.send(message);
-            }
-        });
+            wss.clients.forEach(function(client) {
+                if(ws != client) {
+                    console.log("Sending message to client: " + client);
+                    client.send(message);
+                }
+            });
         }
     });
 });
