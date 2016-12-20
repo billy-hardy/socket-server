@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "gulp; node main.js"
+    "start": "npm install; gulp; node main.js"
   },
   "repository": {
     "type": "git",
