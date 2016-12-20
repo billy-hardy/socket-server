@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io(window.origin);
+var socket = io(window.location.origin);
 setInterval(function () {
     socket.emit("pulse");
 }, 10000);
