@@ -17,9 +17,10 @@ io.on('connection', function (socket) {
 });
 
 function handler(req, res) {
-   fs.readFile(__dirname + '/index.html', 
+   fs.readFile(__dirname + '/../client/index.html', 
        function(err, data) {
            if(err) {
+               console.error('Error loading index.html: ' + err);
                res.writeHead(500);
                return res.end('Error loading index.html');
            }
