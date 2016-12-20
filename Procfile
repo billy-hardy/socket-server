@@ -1,2 +1,1 @@
-web: node main.js
-worker: npm install; gulp;
+web: npm install; gulp; node main.js
