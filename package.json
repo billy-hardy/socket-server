@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "postinstall": "gulp",
+    "heroku-postbuild": "gulp",
     "start": "node main.js"
   },
   "repository": {
