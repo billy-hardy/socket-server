@@ -6,7 +6,7 @@ var fs = require('fs');
 var port = process.env.PORT;
 
 app.listen(port);
-console.log("Deploy port: " + port);
+console.log("Deploying on port " + port);
 
 io.on('connection', function (socket) {
     socket.on("pulse", function() {
@@ -19,12 +19,10 @@ io.on('connection', function (socket) {
 });
 
 function handler(req, res) {
-    var path = '/dist';
-    if(req.url == '/') {
-        path += '/index.html'
-    } else {
-        path += req.url;
-    }
+    var path = '/dist' + req.url;
+    if(path.charAt(path.length-1) == '/') {
+        path += 'index.html'
+    } 
     var filename = __dirname + path;
     fs.readFile(filename, 
         function(err, data) {
