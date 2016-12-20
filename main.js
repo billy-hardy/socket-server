@@ -9,12 +9,18 @@ app.listen(port);
 console.log("Deploying on port " + port);
 
 io.on('connection', function (socket) {
-    socket.on("pulse", function() {
+    socket.on("pulse", function(data) {
         console.info("keeping client " + this.id + " alive");
+        socket.broadcast.emit("pulse", data);
     });
-    socket.on('publish', function(data) {
+    socket.on("publish", function(data) {
         console.log(data);
-        socket.broadcast.emit('publish', data);
+        socket.broadcast.emit("publish", data);
+    });
+    socket.on("message", function (data) {
+        console.info("Received data, " + data + ", from client, " + this.id);
+        console.info("Broadcasting client's, " + this.id + ", message to all connected clients");
+        socket.broadcast.send(data);
     });
 });
 
