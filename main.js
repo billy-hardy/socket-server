@@ -3,8 +3,8 @@ var Server = require('socket.io');
 var app = require('http').createServer(handler);
 var io = new Server(app);
 var fs = require('fs');
-var port = 8080;
-//var port = process.env.PORT;
+//var port = 8080;
+var port = process.env.PORT;
 
 app.listen(port);
 console.log("Deploy port: " + port);
