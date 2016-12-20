@@ -17,15 +17,21 @@ io.on('connection', function (socket) {
 });
 
 function handler(req, res) {
-    var filename = __dirname + '/client/index.html';
+    var path = '/client';
+    if(req.url == '/') {
+        path += '/index.html'
+    } else {
+        path += req.url;
+    }
+    var filename = __dirname + path;
     fs.readFile(filename, 
         function(err, data) {
             if(err) {
-                console.error('Error loading ' + filename + ': ' + err);
+                console.error('Error loading ' + path + ': ' + err);
                 res.writeHead(500);
                 return res.end('Error loading index.html');
             }
-            console.log('Serving: ' + filename);
+            console.log('Serving: ' + path);
             res.writeHead(200);
             res.end(data);
         });

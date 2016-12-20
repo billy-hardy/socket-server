@@ -4,6 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
+    "install": "gulp",
     "start": "node main.js"
   },
   "repository": {
@@ -19,6 +20,10 @@
   "dependencies": {
     "rx-js": "0.0.0",
     "socket.io": "^1.7.2",
-    "ws": "^1.1.1"
+    "socket.io-client": "^1.7.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "run-sequence": "^1.2.2"
   }
 }
