@@ -9,14 +9,17 @@ app.listen(port);
 console.log("Deploy port: " + port);
 
 io.on('connection', function (socket) {
+    socket.on("pulse", function() {
+        console.info("keeping client " + this.id + " alive");
+    });
     socket.on('publish', function(data) {
         console.log(data);
-        socket.broadcast.emit(data);
+        socket.broadcast.emit('publish', data);
     });
 });
 
 function handler(req, res) {
-    var path = '/client';
+    var path = '/dist';
     if(req.url == '/') {
         path += '/index.html'
     } else {
