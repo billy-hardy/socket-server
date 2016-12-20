@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "npm install; gulp; node main.js"
+    "postinstall": "gulp",
+    "start": "node main.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.6.1",
     "run-sequence": "^1.2.2"
   }
 }
