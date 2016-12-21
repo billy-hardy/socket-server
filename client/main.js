@@ -27,7 +27,8 @@ function addMessage(message) {
     var threadTemplate = Handlebars.compile(threadSource);
     console.info(message);
     var html = threadTemplate({messages: [message]});
-    document.getElementById("messages").innerHTML += html;
+    var div = document.getElementById("messages");
+    div.innerHTML = html + div.innerHTML;
 }
 
 var UserService = require("./userService.js");
