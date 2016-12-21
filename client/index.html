@@ -13,7 +13,10 @@
     <body>
         <div class="container">
             <div>
-                <input type="text" id="messageInput">
+                <label for="nameInput">Name</label>
+                <input type="text" id="nameInput">
+                <br/>
+                <textarea id="messageInput"></textarea>
                 <button onclick="_onclick()">Send</button>
             </div>
             <div id="messages"></div>
@@ -27,8 +30,9 @@
         </script>
         <script>
             var input = document.getElementById("messageInput");
+            var nameInput = document.getElementById("nameInput");
             function _onclick() {
-                window.publishMessage(input.value);
+                window.publishMessage(nameInput.value, input.value);
                 input.value = "";
             }
         </script>

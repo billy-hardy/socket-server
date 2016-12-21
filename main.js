@@ -13,16 +13,21 @@ io.on('connection', function (socket) {
         console.info("keeping client " + this.id + " alive");
         socket.broadcast.emit("pulse", data);
     });
-    socket.on("publish", function(data) {
-        console.log(data);
-        socket.broadcast.emit("publish", data);
-    });
     socket.on("message", function (data) {
         console.info("Received data, " + data + ", from client, " + this.id);
         console.info("Broadcasting client's, " + this.id + ", message to all connected clients");
         socket.broadcast.send(data);
     });
 });
+
+var chat = io
+    .of('/chat')
+    .on('connection', function (socket) {
+        socket.on("chat", function(data) {
+            console.log(data);
+            socket.broadcast.emit("chat", data);
+        });
+    });
 
 function handler(req, res) {
     var path = '/dist' + req.url;
