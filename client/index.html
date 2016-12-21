@@ -5,6 +5,12 @@
         <script src="/build.js"></script>
     </head>
     <body>
-        <span>Test</span>
+        <script id="chatThread" type="text/x-handlebars-template">
+            <ul>
+                {{#each this.messages}}
+                {{> chatMessage}}
+                {{/each}}
+            </ul>
+        </script>
     </body>
 </html>

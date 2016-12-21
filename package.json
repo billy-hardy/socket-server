@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/billy-hardy/socket-server#readme",
   "dependencies": {
+    "handlebars": "^4.0.6",
     "rx-js": "0.0.0",
     "socket.io": "^1.7.2",
     "socket.io-client": "^1.7.2"
