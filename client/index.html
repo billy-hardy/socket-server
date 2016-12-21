@@ -4,13 +4,33 @@
         <meta charset="UTF-8">
         <script src="/build.js"></script>
     </head>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
     <body>
+        <div class="container">
+            <div>
+                <input type="text" id="messageInput">
+                <button onclick="_onclick()">Send</button>
+            </div>
+            <div id="messages"></div>
+        </div>
         <script id="chatThread" type="text/x-handlebars-template">
             <ul>
                 {{#each this.messages}}
                 {{> chatMessage}}
                 {{/each}}
             </ul>
+        </script>
+        <script>
+            var input = document.getElementById("messageInput");
+            function _onclick() {
+                window.publishMessage(input.value);
+                input.value = "";
+            }
         </script>
     </body>
 </html>
