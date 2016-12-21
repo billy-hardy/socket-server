@@ -9,12 +9,25 @@
             display: flex;
             flex-direction: row;
         }
+        [hidden] {
+            display: none;
+        }
     </style>
     <body>
-        <div class="container">
+        <div class="login-form">
+            <label for="username">Username</label>
+            <input type="text" id="username"/>
+            <br/>
+
+            <label for="password">Password</label>
+            <input type="password" id="password"/>
+            <br/>
+            <button onclick="_login()">Login</button>
+            <button onclick="_register()">Register</button>
+        </div>  
+        <div class="container" hidden>
             <div>
-                <label for="nameInput">Name</label>
-                <input type="text" id="nameInput">
+                <label for="messageInput">Message</label>
                 <br/>
                 <textarea id="messageInput"></textarea>
                 <button onclick="_onclick()">Send</button>
@@ -30,10 +43,39 @@
         </script>
         <script>
             var input = document.getElementById("messageInput");
-            var nameInput = document.getElementById("nameInput");
+            var loginForm = document.querySelector(".login-form");
+            var container = document.querySelector(".container");
+
             function _onclick() {
-                window.publishMessage(nameInput.value, input.value);
+                window.publishMessage(input.value);
                 input.value = "";
+            }
+            function resetUsernamePassword() {
+                document.getElementById("username").value = "";
+                document.getElementById("password").value = "";
+            }
+            
+            function getUsernamePassword() {
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+                return {username, password};
+            }
+
+            function _login() {
+                var user = getUsernamePassword();
+                window.authenticate(user.username, user.password).then(function(user) {
+                    window.loggedInUser = user;
+                    loginForm.hidden = true;
+                    container.hidden = false;
+                    console.log("logged in as: " + user.username);
+                });
+            }
+            function _register() {
+                var user = getUsernamePassword();
+                window.addUser(user.username, user.password).then(function(user) {
+                    console.log("New user created: " + user.username);
+                    resetUsernamePassword();
+                });
             }
         </script>
     </body>
