@@ -30,15 +30,20 @@ chat.on("chat", addMessage);
 function addUser(user) {
     userService.addUser(user);
     window.allUsers.add(user);
+    updateUserList();
+}
+
+function removeUser(user) {
+    window.allUsers.delete(user);
+    updateUserList();
+}
+
+function updateUserList() {
     var userListSource = document.getElementById("userList").innerHTML;
     var userListTemplate = Handlebars.compile(userListSource);
     var html = userListTemplate(Array.from(window.allUsers));
     var div = document.getElementById("users");
     div.innerHTML = html;
-}
-
-function removeUser(user) {
-    window.allUsers.delete(user);
 }
 
 function addMessage(message) {

@@ -8,26 +8,17 @@ var port = process.env.PORT;
 app.listen(port);
 console.log("Deploying on port " + port);
 
-io.on('connection', function (socket) {
-    socket.on("pulse", function(data) {
-        console.info("keeping client " + this.id + " alive");
-        socket.broadcast.emit("pulse", data);
-    });
-    socket.on("message", function (data) {
-        console.info("Received data, " + data + ", from client, " + this.id);
-        console.info("Broadcasting client's, " + this.id + ", message to all connected clients");
-        socket.broadcast.send(data);
-    });
-});
-
-var socketIdUserMap = new Map();
+var socketIdUserMap = {}; 
 
 var chat = io
     .of('/chat')
     .on('connection', function (socket) {
         socket.on("user-login", function (user) {
-            console.log("User, "+user+", logged in");
-            socketIdUserMap.set(socket.id, user);
+            for(var id in socketIdUserMap) {
+                socket.emit("user-login", socketIdUserMap[id]);
+            }
+            console.log("User, "+user.username+", logged in");
+            socketIdUserMap[socket.id] = user;
             socket.broadcast.emit("user-login", user);
         });
         socket.on("chat", function(data) {
@@ -35,10 +26,11 @@ var chat = io
             socket.broadcast.emit("chat", data);
         });
         socket.on("disconnect", function () {
-            var user = socketIdUserMap.get(socket.id);
+            console.log(socket.id);
+            var user = socketIdUserMap[socket.id];
             socket.broadcast.emit("user-logout", user);
-            socketIdUserMap.delete(socket.id);
-            console.log("User, "+user+", logged out");
+            console.log("User, "+(user && user.username)+", logged out");
+            delete socketIdUserMap[socket.id];
         });
     });
 

@@ -33,6 +33,9 @@ class UserService extends Service {
     }
 
     addUser(...users) {
+        users = users.filter(user => {
+            return user.id != null && user.username != null;
+        });
         return Promise.all(users.map(user => {
             this.getById(user.id).then(existingUser => {
                 if(existingUser != null) {
