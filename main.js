@@ -20,12 +20,25 @@ io.on('connection', function (socket) {
     });
 });
 
+var socketIdUserMap = new Map();
+
 var chat = io
     .of('/chat')
     .on('connection', function (socket) {
+        socket.on("user-login", function (user) {
+            console.log("User, "+user+", logged in");
+            socketIdUserMap.set(socket.id, user);
+            socket.broadcast.emit("user-login", user);
+        });
         socket.on("chat", function(data) {
             console.log(data);
             socket.broadcast.emit("chat", data);
+        });
+        socket.on("disconnect", function () {
+            var user = socketIdUserMap.get(socket.id);
+            socket.broadcast.emit("user-logout", user);
+            socketIdUserMap.delete(socket.id);
+            console.log("User, "+user+", logged out");
         });
     });
 

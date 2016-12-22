@@ -9,6 +9,7 @@ setInterval(function () {
 }, 30000);
 
 Handlebars.registerPartial('chatMessage', '<li>{{this.name}}: {{this.content}}</li>');
+Handlebars.registerPartial('userItem', '<li>{{this.username}}</li>');
 
 window.publishMessage = function publishMessage(content) {
     var message = {
@@ -20,7 +21,25 @@ window.publishMessage = function publishMessage(content) {
     addMessage(message);
 };
 
+window.allUsers = new Set();
+
+chat.on("user-login", addUser);
+chat.on("user-logout", removeUser); 
 chat.on("chat", addMessage);
+
+function addUser(user) {
+    userService.addUser(user);
+    window.allUsers.add(user);
+    var userListSource = document.getElementById("userList").innerHTML;
+    var userListTemplate = Handlebars.compile(userListSource);
+    var html = userListTemplate(Array.from(window.allUsers));
+    var div = document.getElementById("users");
+    div.innerHTML = html;
+}
+
+function removeUser(user) {
+    window.allUsers.delete(user);
+}
 
 function addMessage(message) {
     var threadSource = document.getElementById("chatThread").innerHTML;
@@ -37,7 +56,11 @@ var userService = new UserService();
 window.userService = userService;
 
 window.authenticate = function authenticate(username, password) {
-    return userService.authenticate(username, password);
+    var loggedIn = userService.authenticate(username, password);
+    loggedIn.then(user => {
+        chat.emit("user-login", user);
+    });
+    return loggedIn;
 };
 
 window.addUser = function addUser(username, password) {

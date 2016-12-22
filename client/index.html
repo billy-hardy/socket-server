@@ -33,11 +33,20 @@
                 <button onclick="_onclick()">Send</button>
             </div>
             <div id="messages"></div>
+            <div id="users"></div>
         </div>
         <script id="chatThread" type="text/x-handlebars-template">
             <ul>
                 {{#each this.messages}}
                 {{> chatMessage}}
+                {{/each}}
+            </ul>
+        </script>
+        <script id="userList" type="text/x-handlebars-template">
+            Users:
+            <ul>
+                {{#each this}}
+                {{> userItem}}
                 {{/each}}
             </ul>
         </script>
