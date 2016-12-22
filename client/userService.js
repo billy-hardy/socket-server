@@ -8,11 +8,14 @@ class UserService extends Service {
     }
 
     authenticate(username, password) {
-        return this.getByUsername(username).then(user => {
-            if(user.passwordHash != md5(password)) {
-                return Promise.reject("Invalid Username/Password");
+        return this.getByUsername(username).then(users => {
+            var loggedInUsers = users.filter(function(user) {
+                return user.passwordHash == md5(password);
+            });
+            if(loggedInUsers.length > 0) {
+                return loggedInUsers[0];
             }
-            return user;
+            return Promise.reject("Invalid Username/Password");
         }, () => {
             return Promise.reject("Invalid Username/Password");
         });
@@ -25,17 +28,19 @@ class UserService extends Service {
     getByUsername(username) {
         return this.getAll().then(users => {
             let filtered = users.filter(user => user.username == username);
-            return filtered[0];
+            return filtered;
         });
     }
 
-    addUser(user) {
-        return this.getByUsername(user.username).then(existingUser => {
-            if(existingUser != null) {
-                return Promise.reject("Username: "+user.username+" already in use");
-            }
-            return this.write(user);
-        });
+    addUser(...users) {
+        return Promise.all(users.map(user => {
+            this.getById(user.id).then(existingUser => {
+                if(existingUser != null) {
+                    return Promise.reject("User, "+user.id+", already in use");
+                }
+                return this.write(user);
+            });
+        }));
     }
 
     deleteUser(userId) {
