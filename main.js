@@ -21,6 +21,11 @@ var chat = io
             socketIdUserMap[socket.id] = user;
             socket.broadcast.emit("user-login", user);
         });
+        socket.on("user-logged-out", function (user) {
+            socket.broadcast.emit("user-logout", user);
+            console.log("User, "+(user && user.username)+", logged out");
+            delete socketIdUserMap[socket.id];
+        });
         socket.on("chat", function(data) {
             console.log(data);
             socket.broadcast.emit("chat", data);
@@ -28,9 +33,6 @@ var chat = io
         socket.on("disconnect", function () {
             console.log(socket.id);
             var user = socketIdUserMap[socket.id];
-            socket.broadcast.emit("user-logout", user);
-            console.log("User, "+(user && user.username)+", logged out");
-            delete socketIdUserMap[socket.id];
         });
     });
 
