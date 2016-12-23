@@ -21,27 +21,30 @@ window.publishMessage = function publishMessage(content) {
     addMessage(message);
 };
 
-window.allUsers = new Set();
+window.allUsers = new Map();
 
 chat.on("user-login", addUser);
 chat.on("user-logout", removeUser); 
 chat.on("chat", addMessage);
+chat.on("disconnect", function () {
+    chat.emit("user-logout", window.loggedInUser);
+});
 
 function addUser(user) {
     userService.addUser(user);
-    window.allUsers.add(user);
+    window.allUsers.set(user.id, user);
     updateUserList();
 }
 
 function removeUser(user) {
-    window.allUsers.delete(user);
+    window.allUsers.delete(user.id);
     updateUserList();
 }
 
 function updateUserList() {
     var userListSource = document.getElementById("userList").innerHTML;
     var userListTemplate = Handlebars.compile(userListSource);
-    var html = userListTemplate(Array.from(window.allUsers));
+    var html = userListTemplate(Array.from(window.allUsers.values()));
     var div = document.getElementById("users");
     div.innerHTML = html;
 }
