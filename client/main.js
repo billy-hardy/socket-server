@@ -67,6 +67,7 @@ window.authenticate = function authenticate(username, password) {
     var loggedIn = userService.authenticate(username, password);
     loggedIn.then(user => {
         chat.emit("user-login", user);
+        updateUserList();
     });
     return loggedIn;
 };
