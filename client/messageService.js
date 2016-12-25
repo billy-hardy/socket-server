@@ -1,4 +1,4 @@
-var Service = require("./services.js");
+var Service = require("./service.js");
 var Message = require("./message.js");
 
 class MessageService extends Service {
