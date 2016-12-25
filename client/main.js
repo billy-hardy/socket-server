@@ -23,15 +23,19 @@ window.publishMessage = function publishMessage(content) {
 
 window.allUsers = new Map();
 
-chat.on("user-login", addUser);
+chat.on("user-login", addExistingUser);
 chat.on("user-logout", removeUser); 
 chat.on("chat", addMessage);
 chat.on("disconnect", function () {
     chat.emit("user-logout", window.loggedInUser);
 });
 
-function addUser(user) {
-    userService.addUser(user);
+function addExistingUser(user) {
+    userService.addExistingUsers(user).then(function () {
+        console.log("User, "+user.username+", successfully added");
+    }, function(e) {
+        console.log(e);
+    });
     window.allUsers.set(user.id, user);
     updateUserList();
 }
@@ -74,5 +78,5 @@ window.authenticate = function authenticate(username, password) {
 
 window.addUser = function addUser(username, password) {
     var user = new User(username, password);
-    return userService.addUser(user);
+    return userService.addUsers(user);
 };

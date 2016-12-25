@@ -9,6 +9,16 @@ class Service {
         });
     }
 
+    generateUUID() {
+        function r4() {
+            function r() {
+                return Math.floor(Math.random()*10)+'';
+            }
+            return r()+r()+r()+r();
+        }
+        return r4()+r4()+r4()+r4();
+    }
+
     write(...data) {
         return Promise.all(data.map((data) => {
             return this.dbPromise.then(db => {

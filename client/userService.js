@@ -1,6 +1,5 @@
 var User = require("./user.js");
 var Service = require("./service.js");
-var md5 = require("blueimp-md5");
 
 class UserService extends Service {
     constructor(keypath) {
@@ -10,7 +9,7 @@ class UserService extends Service {
     authenticate(username, password) {
         return this.getByUsername(username).then(users => {
             var loggedInUsers = users.filter(function(user) {
-                return user.passwordHash == md5(password);
+                return user.checkPassword(password);
             });
             if(loggedInUsers.length > 0) {
                 return loggedInUsers[0];
@@ -22,24 +21,37 @@ class UserService extends Service {
     }
 
     getAllUsers() {
-        return this.getAll();
+        return this.getAll().then(users => {
+            return users.map(user => {
+                return User.fromJSON(user);
+            });
+        });
     }
 
     getByUsername(username) {
-        return this.getAll().then(users => {
-            let filtered = users.filter(user => user.username == username);
-            return filtered;
-        });
+        return this.getAllUsers()
+            .then(users => users.filter(user => user.username == username));
     }
 
-    addUser(...users) {
-        users = users.filter(user => {
-            return user.id != null && user.username != null;
-        });
+    addUsers(...users) {
+        users = users.filter(user => user.id == null && user.username != null);
         return Promise.all(users.map(user => {
-            this.getById(user.id).then(existingUser => {
+            this.user.id = this.getUUID();
+            return this.get(user.id).then(existingUser => {
                 if(existingUser != null) {
-                    return Promise.reject("User, "+user.id+", already in use");
+                    return Promise.reject("User, " + user.id + ", already in use");
+                }
+                return this.write(user);
+            });
+        }));
+    }
+
+    addExistingUsers(...users) {
+        users = users.filter(user => user.id != null && user.username != null);
+        return Promise.all(users.map(user => {
+            return this.getByUsername(user.username).then(existingUsers => {
+                if(existingUsers.length > 0) {
+                    return Promise.reject("User, " + user.username + ", already in use");
                 }
                 return this.write(user);
             });

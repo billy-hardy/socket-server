@@ -1,21 +1,26 @@
 var md5 = require("blueimp-md5");
 
 class User {
+    static fromJSON(user) {
+        var newUser = new User(user.username);
+        newUser.passwordHash = user.passwordHash;
+        newUser.id = user.id;
+        return newUser;
+    }
+
     constructor(username, password) {
         this.username = username;
-        this.passwordHash = md5(password);
-        this.id = getUUID();
+        this.password = password;
+        this.id = null;
     }
-}
 
-function getUUID() {
-    function r4() {
-        function r() {
-            return Math.floor(Math.random()*10)+'';
-        }
-        return r()+r()+r()+r();
+    set password(password) {
+        this.passwordHash = md5(password);
     }
-    return r4()+r4()+r4()+r4();
+
+    checkPassword(password) {
+        return this.passwordHash == md5(password);
+    }
 }
 
 module.exports = User;
