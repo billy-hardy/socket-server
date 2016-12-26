@@ -6,6 +6,14 @@ class MessageService extends Service {
         super("message", keypath)
     }
 
+    getAllMessages() {
+        return this.getAll().then(messages => {
+            return messages.map(message => {
+                return Message.fromJSON(message);
+            });
+        });
+    }
+
     addMessages(...messages) {
         return Promise.all(messages.map(message => {
             message.id = this.generateUUID();

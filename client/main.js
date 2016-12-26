@@ -45,6 +45,14 @@ function removeUser(user) {
     updateUserList();
 }
 
+function addMessage(message) {
+    window.messages.push(message);
+    window.messages.sort(function sort(a, b) {
+        return a.date - b.date;
+    });
+    updateMessageList();
+}
+
 function updateUserList() {
     var userListSource = document.getElementById("userList").innerHTML;
     var userListTemplate = Handlebars.compile(userListSource);
@@ -53,13 +61,12 @@ function updateUserList() {
     div.innerHTML = html;
 }
 
-function addMessage(message) {
+function updateMessageList() {
     var threadSource = document.getElementById("chatThread").innerHTML;
     var threadTemplate = Handlebars.compile(threadSource);
-    console.info(message);
-    var html = threadTemplate({messages: [message]});
+    var html = threadTemplate({messages: window.messages});
     var div = document.getElementById("messages");
-    div.innerHTML = html + div.innerHTML;
+    div.innerHTML = html;
 }
 
 var UserService = require("./userService.js");
@@ -71,12 +78,18 @@ var MessageService = require("./messageService.js");
 var Message = require("./message.js");
 var messageService = new MessageService();
 window.messageService = messageService;
+window.messages = [];
 
 window.authenticate = function authenticate(username, password) {
     var loggedIn = userService.authenticate(username, password);
     loggedIn.then(user => {
         chat.emit("user-login", user);
         updateUserList();
+        messageService.getAllMessages().then(messages => {
+            messages.forEach(message => {
+                addMessage(message);
+            });
+        });
     });
     return loggedIn;
 };
