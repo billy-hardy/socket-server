@@ -36,8 +36,8 @@ class UserService extends Service {
     addUsers(...users) {
         users = users.filter(user => user.id == null && user.username != null);
         return Promise.all(users.map(user => {
-            this.user.id = this.getUUID();
-            return this.get(user.id).then(existingUser => {
+            user.id = this.generateUUID();
+            return this.getById(user.id).then(existingUser => {
                 if(existingUser != null) {
                     return Promise.reject("User, " + user.id + ", already in use");
                 }

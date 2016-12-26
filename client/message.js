@@ -8,3 +8,5 @@ class Message {
         this.date = null;
     }
 }
+
+module.exports = Message;

@@ -6,10 +6,17 @@ class MessageService extends Service {
         super("message", keypath)
     }
 
-    addMessages(...message) {
-
+    addMessages(...messages) {
+        return Promise.all(messages.map(message => {
+            message.id = this.generateUUID();
+            message.date = new Date().valueOf();
+            return this.write(message).then(() => {
+                return Promise.resolve(message)
+            }, e => {
+                return Promise.reject(e);
+            });
+        }));
     }
-
 }
 
 module.exports = MessageService;

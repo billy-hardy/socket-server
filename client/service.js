@@ -4,8 +4,9 @@ class Service {
     constructor(store, keypath = "id") {
         this.store = store
         this.keypath = keypath;
-        this.dbPromise = idb.open('app', 1, upgradeDB => {
-            upgradeDB.createObjectStore(this.store, {keyPath: this.keypath});
+        this.dbPromise = idb.open('dc2f', 2, upgradeDB => {
+            upgradeDB.createObjectStore("user", {keyPath: this.keypath});
+            upgradeDB.createObjectStore("message", {keyPath: this.keypath});
         });
     }
 

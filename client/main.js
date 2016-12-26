@@ -8,17 +8,17 @@ setInterval(function () {
     socket.emit("pulse", socket.id);
 }, 30000);
 
-Handlebars.registerPartial('chatMessage', '<li>{{this.name}}: {{this.content}}</li>');
+Handlebars.registerPartial('chatMessage', '<li>{{this.user.username}}: {{this.content}}</li>');
 Handlebars.registerPartial('userItem', '<li>{{this.username}}</li>');
 
 window.publishMessage = function publishMessage(content) {
-    var message = {
-        name: window.loggedInUser.username, 
-        content: content
-    };
-
-    chat.emit("chat", message);
-    addMessage(message);
+    var message = new Message(window.loggedInUser, content);
+    messageService.addMessages(message).then(messages => {
+        messages.forEach(message => {
+            chat.emit("chat", message);
+            addMessage(message);
+        });
+    }, e => console.error("Failed to save message: " + e ));
 };
 
 window.allUsers = new Map();
@@ -66,6 +66,11 @@ var UserService = require("./userService.js");
 var User = require("./user.js");
 var userService = new UserService();
 window.userService = userService;
+
+var MessageService = require("./messageService.js");
+var Message = require("./message.js");
+var messageService = new MessageService();
+window.messageService = messageService;
 
 window.authenticate = function authenticate(username, password) {
     var loggedIn = userService.authenticate(username, password);
