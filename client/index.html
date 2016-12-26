@@ -8,13 +8,21 @@
         .container {
             display: flex;
             flex-direction: row;
+            flex-wrap: wrap;
         }
         .container > * {
-            flex: 1;
+            min-width: 300px;
+            max-height: calc(100vh - 16px);
+            display: flex;
+            flex-direction: column;
         }
         [hidden] {
             display: none;
         }
+        #messages {
+            overflow: auto;
+        }
+
     </style>
     <body>
         <div class="login-form">
@@ -30,12 +38,12 @@
         </div>  
         <div class="container" hidden>
             <div>
-                <label for="messageInput">Message</label>
+                <label for="messages">Messages</label>
+                <div id="messages"></div>
                 <br/>
                 <textarea id="messageInput"></textarea>
                 <button onclick="_onclick()">Send</button>
             </div>
-            <div id="messages"></div>
             <div id="users"></div>
         </div>
         <script id="chatThread" type="text/x-handlebars-template">
