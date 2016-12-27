@@ -16,6 +16,7 @@ class IndexController {
         this.indexView = new IndexView();
         this._initSocket();
         this._initData();
+        this._initServiceWorker();
     }
 
     authenticate(username, password) {
@@ -101,6 +102,10 @@ class IndexController {
         this.userService = new UserService(this.userStore, this.dbPromise);
         this.messageStore = "message";
         this.messageService = new MessageService(this.messageStore, this.dbPromise);
+    }
+
+    _initServiceWorker() {
+        //TODO: create service worker
     }
 }
 
