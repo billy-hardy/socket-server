@@ -34,7 +34,7 @@ var chat = io
     });
 
 function handler(req, res) {
-    var path = '/dist' + req.url;
+    var path = '/client' + req.url;
     if(path.charAt(path.length-1) == '/') {
         path += 'index.html'
     } 
