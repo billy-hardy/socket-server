@@ -1,3 +1,5 @@
+var DEPLOY_DIR = "./server/dist";
+
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
@@ -22,10 +24,10 @@ gulp.task('browserify', function() {
             insertGlobals: true
         }))
         .pipe(concat('build.js'))
-        .pipe(gulp.dest('./dist'));
+        .pipe(gulp.dest(DEPLOY_DIR));
 });
 
 gulp.task('move', function () {
     return gulp.src(['./client/index.html', './client/favicon.ico'])
-        .pipe(gulp.dest('./dist'));
+        .pipe(gulp.dest(DEPLOY_DIR));
 });
