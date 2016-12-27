@@ -1,100 +1,129 @@
 var io = require('socket.io-client');
 var Handlebars = require("handlebars");
+var idb = require("idb");
 
-var socket = io(window.location.origin);
-var chat = io(window.location.origin + "/chat");
-
-setInterval(function () {
-    socket.emit("pulse", socket.id);
-}, 30000);
+var UserService = require("./userService.js");
+var User = require("./user.js");
+var MessageService = require("./messageService.js");
+var Message = require("./message.js");
 
 Handlebars.registerPartial('chatMessage', '<li>{{this.user.username}}: {{this.content}}</li>');
 Handlebars.registerPartial('userItem', '<li>{{this.username}}</li>');
 
-window.publishMessage = function publishMessage(content) {
-    var message = new Message(window.loggedInUser, content);
-    messageService.addMessages(message).then(messages => {
-        messages.forEach(message => {
-            chat.emit("chat", message);
-            addMessage(message);
-        });
-    }, e => console.error("Failed to save message: " + e ));
-};
+class IndexController {
+    constructor() {
+        this._initDBs();
+        this.indexView = new IndexView();
+        this._initSocket();
+        this._initData();
+    }
 
-window.allUsers = new Map();
-
-chat.on("user-login", addExistingUser);
-chat.on("user-logout", removeUser); 
-chat.on("chat", addMessage);
-chat.on("disconnect", function () {
-    chat.emit("user-logout", window.loggedInUser);
-});
-
-function addExistingUser(user) {
-    userService.addExistingUsers(user).then(function () {
-        console.log("User, "+user.username+", successfully added");
-    }, function(e) {
-        console.log(e);
-    });
-    window.allUsers.set(user.id, user);
-    updateUserList();
-}
-
-function removeUser(user) {
-    window.allUsers.delete(user.id);
-    updateUserList();
-}
-
-function addMessage(message) {
-    window.messages.push(message);
-    window.messages.sort(function sort(a, b) {
-        return a.date - b.date;
-    });
-    updateMessageList();
-}
-
-function updateUserList() {
-    var userListSource = document.getElementById("userList").innerHTML;
-    var userListTemplate = Handlebars.compile(userListSource);
-    var html = userListTemplate(Array.from(window.allUsers.values()));
-    var div = document.getElementById("users");
-    div.innerHTML = html;
-}
-
-function updateMessageList() {
-    var threadSource = document.getElementById("chatThread").innerHTML;
-    var threadTemplate = Handlebars.compile(threadSource);
-    var html = threadTemplate({messages: window.messages});
-    var div = document.getElementById("messages");
-    div.innerHTML = html;
-}
-
-var UserService = require("./userService.js");
-var User = require("./user.js");
-var userService = new UserService();
-window.userService = userService;
-
-var MessageService = require("./messageService.js");
-var Message = require("./message.js");
-var messageService = new MessageService();
-window.messageService = messageService;
-window.messages = [];
-
-window.authenticate = function authenticate(username, password) {
-    var loggedIn = userService.authenticate(username, password);
-    loggedIn.then(user => {
-        chat.emit("user-login", user);
-        updateUserList();
-        messageService.getAllMessages().then(messages => {
-            messages.forEach(message => {
-                addMessage(message);
+    authenticate(username, password) {
+        this.loggedIn = this.userService.authenticate(username, password);
+        return this.loggedIn.then(user => {
+            this.user = user;
+            this.socket.emit("user-login", user);
+            this.users.set(user.id, user);
+            this.indexView.updateUserList(this.users);
+            this.messageService.getAllMessages().then(messages => {
+                this.addMessages(...messages);
             });
+            return this.user;
         });
-    });
-    return loggedIn;
-};
+    }
 
-window.addUser = function addUser(username, password) {
-    var user = new User(username, password);
-    return userService.addUsers(user);
-};
+    addExistingUser(user) {
+        this.userService.addExistingUsers(user).then(() => {
+            console.log("User, "+user.username+", successfully added");
+        }, function(e) {
+            console.log(e);
+        });
+        this.users.set(user.id, user);
+        this.indexView.updateUserList(this.users);
+    }
+
+    addUser(username, password) {
+        return this.userService.addUsers(new User(username, password));
+    }
+
+    removeUser(user) {
+        this.users.delete(user.id);
+        this.indexView.updateUserList(this.users);
+    }
+
+    persistMessages(...messages) {
+        return this.messageService.addMessages(...messages).then(messages => {
+            this.addMessages(...messages);
+        });
+    }
+
+    addMessages(...messages) {
+        this.messages.push(...messages);
+        this.messages.sort((a, b) => a.date - b.date);
+        this.indexView.updateMessageList(this.messages);
+    }
+
+    publishMessage(content) {
+        var message = new Message(this.user, content);
+        this.messageService.addMessages(message).then(messages => {
+            messages.forEach(message => {
+                this.socket.emit("chat", message);
+                this.addMessages(message);
+            });
+        }, e => console.error("Failed to save message: " + e ));
+    }
+
+
+    _initData() {
+        this.users = new Map();
+        this.messages = [];
+    }
+
+    _initSocket() {
+        this.socket = io(window.location.origin + "/chat");
+        this.socket.on("user-login", this.addExistingUser.bind(this));
+        this.socket.on("user-logout", this.removeUser.bind(this)); 
+        this.socket.on("chat", this.persistMessages.bind(this));
+        this.socket.on("disconnect", () => {
+            this.socket.emit("user-logout", this.user);
+        });
+        setInterval(() => {
+            this.socket.emit("pulse", this.socket.id);
+        }, 30000);
+    }
+
+    _initDBs() {
+        this.dbPromise = idb.open('dc2f', 2, upgradeDB => {
+            upgradeDB.createObjectStore(this.userStore, {keyPath: this.keypath});
+            upgradeDB.createObjectStore(this.messageStore, {keyPath: this.keypath});
+        });
+        this.userStore = "user";
+        this.userService = new UserService(this.userStore, this.dbPromise);
+        this.messageStore = "message";
+        this.messageService = new MessageService(this.messageStore, this.dbPromise);
+    }
+}
+
+class IndexView {
+    constructor() {
+        this.userListSource = document.getElementById("userList").innerHTML;
+        this.userListTemplate = Handlebars.compile(this.userListSource);
+
+        this.threadSource = document.getElementById("chatThread").innerHTML;
+        this.threadTemplate = Handlebars.compile(this.threadSource);
+    }
+
+    updateUserList(users) {
+        var html = this.userListTemplate(Array.from(users.values()));
+        var div = document.getElementById("users");
+        div.innerHTML = html;
+    }
+
+    updateMessageList(messages) {
+        var html = this.threadTemplate(messages);
+        var div = document.getElementById("messages");
+        div.innerHTML = html;
+    }
+}
+
+window.IndexController = IndexController;

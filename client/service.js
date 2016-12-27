@@ -1,13 +1,10 @@
 let idb = require("idb");
 
 class Service {
-    constructor(store, keypath = "id") {
+    constructor(store, dbPromise, keypath = "id") {
         this.store = store
+        this.dbPromise = dbPromise;
         this.keypath = keypath;
-        this.dbPromise = idb.open('dc2f', 2, upgradeDB => {
-            upgradeDB.createObjectStore("user", {keyPath: this.keypath});
-            upgradeDB.createObjectStore("message", {keyPath: this.keypath});
-        });
     }
 
     generateUUID() {

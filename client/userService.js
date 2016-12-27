@@ -2,8 +2,8 @@ var User = require("./user.js");
 var Service = require("./service.js");
 
 class UserService extends Service {
-    constructor(keypath) {
-        super("user", keypath);
+    constructor(store, dbPromise, keypath) {
+        super(store, dbPromise, keypath);
     }
 
     authenticate(username, password) {
