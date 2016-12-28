@@ -27,6 +27,12 @@ class MessageService extends Service {
             });
         }));
     }
+
+    deleteMessages(...ids) {
+        return Promise.all(ids.map(id => {
+            return this.delete(id);
+        })); 
+    }
 }
 
 module.exports = MessageService;
