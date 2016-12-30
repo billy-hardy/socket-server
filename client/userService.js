@@ -1,9 +1,9 @@
 var User = require("./user.js");
 var Service = require("./service.js");
 
-class UserService extends Service {
+class UserService {
     constructor(store, dbPromise, keypath) {
-        super(store, dbPromise, keypath);
+        this.service = new Service(store, dbPromise, keypath);
     }
 
     authenticate(username, password) {
@@ -21,7 +21,7 @@ class UserService extends Service {
     }
 
     getAllUsers() {
-        return this.getAll().then(users => {
+        return this.service.getAll().then(users => {
             return users.map(user => {
                 return User.fromJSON(user);
             });
@@ -36,12 +36,12 @@ class UserService extends Service {
     addUsers(...users) {
         users = users.filter(user => user.id == null && user.username != null);
         return Promise.all(users.map(user => {
-            user.id = this.generateUUID();
-            return this.getById(user.id).then(existingUser => {
+            user.id = this.service.generateUUID();
+            return this.service.getById(user.id).then(existingUser => {
                 if(existingUser != null) {
                     return Promise.reject("User, " + user.id + ", already in use");
                 }
-                return this.write(user);
+                return this.service.write(user);
             });
         }));
     }
@@ -53,13 +53,13 @@ class UserService extends Service {
                 if(existingUsers.length > 0) {
                     return Promise.reject("User, " + user.username + ", already in use");
                 }
-                return this.write(user);
+                return this.service.write(user);
             });
         }));
     }
 
     deleteUser(userId) {
-        return this.delete(userId);
+        return this.service.delete(userId);
     }
 }
 

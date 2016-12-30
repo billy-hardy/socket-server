@@ -1,13 +1,13 @@
 var Service = require("./service.js");
 var Message = require("./message.js");
 
-class MessageService extends Service {
+class MessageService {
     constructor(store, dbPromise, keypath) {
-        super(store, dbPromise, keypath)
+        this.service = new Service(store, dbPromise, keypath)
     }
 
     getAllMessages() {
-        return this.getAll().then(messages => {
+        return this.service.getAll().then(messages => {
             return messages.map(message => {
                 return Message.fromJSON(message);
             });
@@ -16,17 +16,19 @@ class MessageService extends Service {
 
     getMessages(...ids) {
         return Promise.all(ids.map(id => {
-            return Message.fromJSON(this.getById(id));
+            this.service.getById(id).then(json => {
+                return Message.fromJSON(json);
+            });
         }));
     }
 
     addMessages(...messages) {
         return Promise.all(messages.map(message => {
             if(message.id == null) {
-                message.id = this.generateUUID();
+                message.id = this.service.generateUUID();
                 message.date = new Date().valueOf();
             }
-            return this.write(message).then(() => {
+            return this.service.write(message).then(() => {
                 return Promise.resolve(message)
             }, e => {
                 return Promise.reject(e);
@@ -36,7 +38,7 @@ class MessageService extends Service {
 
     deleteMessages(...ids) {
         return Promise.all(ids.map(id => {
-            return this.delete(id);
+            return this.service.delete(id);
         })); 
     }
 }
