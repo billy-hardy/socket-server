@@ -3,7 +3,7 @@ var Server = require('socket.io');
 var app = require('http').createServer(handler);
 var io = new Server(app);
 var fs = require('fs');
-var port = process.env.PORT;
+var port = process.env.PORT || 3000;
 
 app.listen(port);
 console.log("Deploying on port " + port);
