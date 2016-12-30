@@ -14,6 +14,12 @@ class MessageService extends Service {
         });
     }
 
+    getMessages(...ids) {
+        return Promise.all(ids.map(id => {
+            return Message.fromJSON(this.getById(id));
+        }));
+    }
+
     addMessages(...messages) {
         return Promise.all(messages.map(message => {
             if(message.id == null) {
