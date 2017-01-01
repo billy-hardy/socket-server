@@ -26,12 +26,12 @@
     </style>
     <body>
         <div class="login-form">
-            <label for="username">Username</label>
-            <input type="text" id="username"/>
+            <label for="usernameInput">Username</label>
+            <input type="text" id="usernameInput"/>
             <br/>
 
-            <label for="password">Password</label>
-            <input type="password" id="password"/>
+            <label for="passwordInput">Password</label>
+            <input type="password" id="passwordInput"/>
             <br/>
             <button onclick="_login()">Login</button>
             <button onclick="_register()">Register</button>
@@ -68,18 +68,38 @@
             var loginForm = document.querySelector(".login-form");
             var container = document.querySelector(".container");
 
+            input.onkeypress = function(e) {
+                if(e.keyCode == 13 && e.shiftKey == false) {
+                    setTimeout(_ => {
+                    input.value = input.value.slice(0, input.value.length-1);
+                    }, 0);
+                    _onclick();
+                }
+            };
+
             function _onclick() {
                 indexController.publishMessage(input.value);
                 input.value = "";
             }
+
+            var usernameInput = document.getElementById("usernameInput");
+            var passwordInput = document.getElementById("passwordInput");
+            function enterHandler(e) {
+                if(e.keyCode == 13) {
+                    _login();
+                }
+            }
+            usernameInput.onkeypress = enterHandler;
+            passwordInput.onkeypress = enterHandler;
+
             function resetUsernamePassword() {
-                document.getElementById("username").value = "";
-                document.getElementById("password").value = "";
+                usernameInput.value = "";
+                passwordInput.value = "";
             }
             
             function getUsernamePassword() {
-                var username = document.getElementById("username").value;
-                var password = document.getElementById("password").value;
+                var username = usernameInput.value;
+                var password = passwordInput.value;
                 return {username, password};
             }
 
