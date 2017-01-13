@@ -94,6 +94,7 @@ class IndexController {
     }
 
     _initDBs() {
+        this.keypath = "id";
         this.dbPromise = idb.open('dc2f', 2, upgradeDB => {
             upgradeDB.createObjectStore(this.userStore, {keyPath: this.keypath});
             upgradeDB.createObjectStore(this.messageStore, {keyPath: this.keypath});

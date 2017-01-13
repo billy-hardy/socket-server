@@ -113,7 +113,7 @@
             }
             function _register() {
                 var user = getUsernamePassword();
-                indexController.addUser(user.username, user.password).then(function(user) {
+                indexController.addUser(user.username, user.password).then(function() {
                     console.log("New user created: " + user.username);
                     resetUsernamePassword();
                 });
