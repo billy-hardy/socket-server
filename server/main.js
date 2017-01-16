@@ -22,12 +22,11 @@ var chat = io
             socket.broadcast.emit("user-login", user);
         });
         socket.on("chat", function(data) {
-            console.log(data);
+            console.log(socketIdUserMap[socket.id] + "sent message " + data);
             socket.broadcast.emit("chat", data);
         });
         socket.on("disconnect", function () {
-            console.log(socket.id + " disconnected");
-            console.log(socketIdUserMap[socket.id]);
+            console.log(socketIdUserMap[socket.id] + " logged out");
             chat.emit("user-logout", socketIdUserMap[socket.id]);
             delete socketIdUserMap[socket.id];
         });
