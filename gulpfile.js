@@ -6,10 +6,32 @@ var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
 var runSequence = require('run-sequence');
+var jshint = require('gulp-jshint');
+var notify = require('gulp-notify');
 
 
 gulp.task('default', function () {
-    return runSequence('server', 'client');
+    return runSequence('jsLint', 'server', 'client');
+});
+
+gulp.task('jsLint', function () {
+    return gulp.src(['server/**/*.js', 'client/**/*.js'])
+    .pipe(jshint({
+        eqeqeq: true,
+        esversion: 6
+    }))
+    .pipe(notify(function (file) {
+        if(file.jshint.success) {
+            //Don't show something if success
+            return false;
+        }
+        var errors = file.jshint.results.map(function (data) {
+            if(data.error) {
+                return '(' +data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+            }
+        });
+        return file.relative + ' (' + file.jshint.results.length + ' errors)\n' + errors;
+    }));
 });
 
 gulp.task('server', function() {
