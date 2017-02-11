@@ -1,8 +1,9 @@
-var DEPLOY_DIR = "./dist";
-var CLIENT_DEPLOY = DEPLOY_DIR + "/client/";
+var DEPLOY_DIR = "./dist/";
+var CLIENT_DEPLOY = DEPLOY_DIR + "client/";
 var SERVER_DEPLOY = DEPLOY_DIR;
 
 var gulp = require('gulp');
+var babel = require('gulp-babel');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
@@ -16,9 +17,17 @@ gulp.task('default', ['server', 'client']);
 gulp.task('server', ['move:server']); 
 gulp.task('client', ['move:client']);
 
-gulp.task('move:client', ['browserify'], function () {
+gulp.task('move:client', ['transpile'], function () {
     return gulp.src(['./client/index.html', './client/favicon.ico'])
         .pipe(gulp.dest(CLIENT_DEPLOY));
+});
+
+gulp.task('transpile', ['browserify'], function() {
+    return gulp.src(CLIENT_DEPLOY+'**/*.js')
+    .pipe(babel({
+        presets: ['es2015']
+    }))
+    .pipe(gulp.dest(CLIENT_DEPLOY));
 });
 
 gulp.task('browserify', ['jsLint:client'], function() {
