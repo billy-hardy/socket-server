@@ -14,12 +14,16 @@ class User {
         this.id = null;
     }
 
+    get password() {
+        return this.passwordHash;
+    }
+
     set password(password) {
         this.passwordHash = md5(password);
     }
 
     checkPassword(password) {
-        return this.passwordHash == md5(password);
+        return this.passwordHash === md5(password);
     }
 }
 

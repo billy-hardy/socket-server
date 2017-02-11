@@ -2,7 +2,7 @@ let idb = require("idb");
 
 class Service {
     constructor(store, dbPromise, keypath = "id") {
-        this.store = store
+        this.store = store;
         this.dbPromise = dbPromise;
         this.keypath = keypath;
     }

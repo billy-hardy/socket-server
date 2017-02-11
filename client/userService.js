@@ -30,15 +30,15 @@ class UserService {
 
     getByUsername(username) {
         return this.getAllUsers()
-            .then(users => users.filter(user => user.username == username));
+            .then(users => users.filter(user => user.username === username));
     }
 
     addUsers(...users) {
-        users = users.filter(user => user.id == null && user.username != null);
+        users = users.filter(user => !user.id && user.username);
         return Promise.all(users.map(user => {
             user.id = this.service.generateUUID();
             return this.service.getById(user.id).then(existingUser => {
-                if(existingUser != null) {
+                if(existingUser) {
                     return Promise.reject("User, " + user.id + ", already in use");
                 }
                 return this.service.write(user);
@@ -47,7 +47,7 @@ class UserService {
     }
 
     addExistingUsers(...users) {
-        users = users.filter(user => user.id != null && user.username != null);
+        users = users.filter(user => user.id && !user.username);
         return Promise.all(users.map(user => {
             return this.getByUsername(user.username).then(existingUsers => {
                 if(existingUsers.length > 0) {
