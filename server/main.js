@@ -34,8 +34,8 @@ var chat = io
 
 function handler(req, res) {
     var path = '/client' + req.url;
-    if(path.charAt(path.length-1) == '/') {
-        path += 'index.html'
+    if(path.charAt(path.length-1) === '/') {
+        path += 'index.html';
     } 
     var filename = __dirname + path;
     fs.readFile(filename, 
