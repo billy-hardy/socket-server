@@ -6,7 +6,6 @@ var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
-var map = require('map-stream');
 
 var paths = {
     server: 'server/**/*.js',
