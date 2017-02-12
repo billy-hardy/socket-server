@@ -9,6 +9,7 @@ var babel = require('gulp-babel');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
+var uglify = require('gulp-uglifyjs');
 
 var paths = {
     beans: 'beans/**/*.js',
@@ -47,6 +48,7 @@ function transpile(src, dest) {
             .pipe(babel({
                 presets: ['es2015']
             }))
+            .pipe(uglify())
             .pipe(gulp.dest(dest));
     }
 }
