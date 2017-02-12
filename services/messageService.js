@@ -7,10 +7,8 @@ class MessageService {
 
     getAllMessages() {
         return this.service.getAll().then(messages => {
-            return messages.map(message => {
-                return Message.fromJSON(message);
-            });
-        });
+            return messages.map(message => Message.fromJSON(message));
+        }, e => Promise.reject(e));
     }
 
     getMessages(...ids) {
