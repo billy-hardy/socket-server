@@ -26,9 +26,11 @@ var chat = io
             socket.broadcast.emit("chat", data);
         });
         socket.on("disconnect", function () {
-            console.log(socketIdUserMap[socket.id].username + " logged out");
-            chat.emit("user-logout", socketIdUserMap[socket.id]);
-            delete socketIdUserMap[socket.id];
+            if(socketIdUserMap[socket.id]) {
+                console.log(socketIdUserMap[socket.id].username + " logged out");
+                chat.emit("user-logout", socketIdUserMap[socket.id]);
+                delete socketIdUserMap[socket.id];
+            }
         });
     });
 
