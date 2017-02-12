@@ -1,9 +1,8 @@
-var Service = require("./service.js");
-var Message = require("./message.js");
+var Message = require("../client/message.js");
 
 class MessageService {
-    constructor(store, dbPromise, keypath) {
-        this.service = new Service(store, dbPromise, keypath);
+    constructor(baseService) {
+        this.service = baseService;
     }
 
     getAllMessages() {
