@@ -2,10 +2,12 @@ var io = require('socket.io-client');
 var Handlebars = require("handlebars");
 var idb = require("idb");
 
-var UserService = require("./userService.js");
-var User = require("./user.js");
-var MessageService = require("./messageService.js");
-var Message = require("./message.js");
+var Service = require("../services/service.js");
+var UserService = require("../services/userService.js");
+var MessageService = require("../services/messageService.js");
+
+var User = require("../beans/user.js");
+var Message = require("../beans/message.js");
 
 Handlebars.registerPartial('chatMessage', '<li>{{this.user.username}}: {{this.content}}</li>');
 Handlebars.registerPartial('userItem', '<li>{{this.username}}</li>');
@@ -95,14 +97,19 @@ class IndexController {
 
     _initDBs() {
         this.keypath = "id";
+
         this.dbPromise = idb.open('dc2f', 2, upgradeDB => {
             upgradeDB.createObjectStore(this.userStore, {keyPath: this.keypath});
             upgradeDB.createObjectStore(this.messageStore, {keyPath: this.keypath});
         });
+
         this.userStore = "user";
-        this.userService = new UserService(this.userStore, this.dbPromise);
+        this._userServiceInternal = new Service(this.userStore, this.dbPromise, this.keypath);
+        this.userService = new UserService(this._userServiceInternal);
+
         this.messageStore = "message";
-        this.messageService = new MessageService(this.messageStore, this.dbPromise);
+        this._messageServiceInternal = new Service(this.messageStore, this.dbPromise, this.keypath);
+        this.messageService = new MessageService(this._messageServiceInternal);
     }
 
     _initServiceWorker() {

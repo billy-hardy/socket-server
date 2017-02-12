@@ -1,9 +1,8 @@
-var User = require("./user.js");
-var Service = require("./service.js");
+var User = require("../beans/user.js");
 
 class UserService {
-    constructor(store, dbPromise, keypath) {
-        this.service = new Service(store, dbPromise, keypath);
+    constructor(baseService) {
+        this.service = baseService;
     }
 
     authenticate(username, password) {
