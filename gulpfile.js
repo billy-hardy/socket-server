@@ -17,13 +17,13 @@ gulp.task('default', ['server', 'client']);
 gulp.task('server', ['move:server']); 
 gulp.task('client', ['move:client']);
 
-gulp.task('move:client', ['transpile'], function () {
+gulp.task('move:client', ['transpile', 'browserify'], function () {
     return gulp.src(['./client/index.html', './client/favicon.ico'])
         .pipe(gulp.dest(CLIENT_DEPLOY));
 });
 
-gulp.task('transpile', ['browserify'], function() {
-    return gulp.src(CLIENT_DEPLOY+'**/*.js')
+gulp.task('transpile', function() {
+    return gulp.src(paths.client)
     .pipe(babel({
         presets: ['es2015']
     }))
