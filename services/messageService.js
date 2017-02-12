@@ -1,4 +1,4 @@
-var Message = require("../client/message.js");
+var Message = require("../beans/message.js");
 
 class MessageService {
     constructor(baseService) {

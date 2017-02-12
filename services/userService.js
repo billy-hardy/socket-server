@@ -1,4 +1,4 @@
-var User = require("../client/user.js");
+var User = require("../beans/user.js");
 
 class UserService {
     constructor(baseService) {

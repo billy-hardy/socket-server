@@ -6,8 +6,8 @@ var Service = require("../services/service.js");
 var UserService = require("../services/userService.js");
 var MessageService = require("../services/messageService.js");
 
-var User = require("./user.js");
-var Message = require("./message.js");
+var User = require("../beans/user.js");
+var Message = require("../beans/message.js");
 
 Handlebars.registerPartial('chatMessage', '<li>{{this.user.username}}: {{this.content}}</li>');
 Handlebars.registerPartial('userItem', '<li>{{this.username}}</li>');
