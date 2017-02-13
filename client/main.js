@@ -110,11 +110,16 @@ class IndexController {
 
         this.messageStore = "message";
         this._messageServiceInternal = new IndexedDBService(this.messageStore, this.dbPromise, this.keypath);
-        this.messageService = new MessageService(this._messageServiceInternal);
+        this.persistedMessageService = new MessageService(this._messageServiceInternal);
         this.restService = new RestService(window.location+"messages");
         this.restMessageService = new MessageService(this.restService);
         window.restMessageService = this.restMessageService;
-        this.messageService = this.restMessageService;
+        if(window.location.search.includes("local")) {
+            this.messageService = this.persistedMessageService;
+        }
+        else {
+            this.messageService = this.restMessageService;
+        }
     }
 
     _initServiceWorker() {
