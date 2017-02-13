@@ -1,5 +1,4 @@
 var User = require("../beans/user.js");
-var UUIDUtils = require('../utils/uuidUtils.js');
 
 class UserService {
     constructor(baseService) {
@@ -36,7 +35,6 @@ class UserService {
     addUsers(...users) {
         users = users.filter(user => !user.id && user.username);
         return Promise.all(users.map(user => {
-            user.id = UUIDUtils.generateUUID();
             return this.service.getById(user.id).then(existingUser => {
                 if(existingUser) {
                     return Promise.reject("User, " + user.id + ", already in use");

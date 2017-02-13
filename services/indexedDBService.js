@@ -1,4 +1,5 @@
 let idb = require('idb');
+var UUIDUtils = require('../utils/uuidUtils.js');
 
 class IndexedDBService {
     constructor(store, dbPromise, keypath = 'id') {
@@ -10,6 +11,7 @@ class IndexedDBService {
     write(...data) {
         return Promise.all(data.map((data) => {
             return this.dbPromise.then(db => {
+                data.id = UUIDUtils.generateUUID();
                 const tx = db.transaction(this.store, 'readwrite');
                 tx.objectStore(this.store).put(data);
                 return tx.complete.then(_ => data);

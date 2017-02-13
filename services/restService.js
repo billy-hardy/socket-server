@@ -19,13 +19,13 @@ class RestService {
 
     write(...data) {
         return Promise.all(data.map(data => {
-            return this._constructRequest(this.baseUrl, 'post', data);
+            return this._constructRequest(this.baseUrl, 'post', JSON.stringify(data));
         }));
     }
 
     update(...data) {
         return Promise.all(data.map(data => {
-            return this._constructRequest(this.baseUrl+'/'+data.id, 'put', data);
+            return this._constructRequest(this.baseUrl+'/'+data.id, 'put', JSON.stringify(data));
         }));
     }
 
