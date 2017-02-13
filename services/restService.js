@@ -13,7 +13,7 @@ class RestService {
         if(body) {
             config.body = body;
         }
-        let request = new Request(this.baseUrl, config);
+        let request = new Request(url, config);
         return fetch(request).then(res => res.json());
     }
 
@@ -25,7 +25,7 @@ class RestService {
 
     update(...data) {
         return Promise.all(data.map(data => {
-            return this._constructRequest(this.baseUrl+'/'+data.id, 'put', JSON.stringify(data));
+            return this._constructRequest(this.baseUrl, 'put', JSON.stringify(data));
         }));
     }
 
