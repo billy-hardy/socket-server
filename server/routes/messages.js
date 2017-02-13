@@ -9,13 +9,18 @@ router.route('/')
         messageService.getAllMessages()
             .then(messages => res.json(messages), e => res.send(e));
     })
+    .put(function(req, res, next) {
+        messageService.addMessages(req.body)
+            .then(messages => res.json(messages[0]), error => res.send(error));
+    })
     .post(function(req, res, next) {
         messageService.addMessages(req.body)
             .then(messages => res.json(messages[0]), e => res.send(e));
     });
 
 router.param('id', function(req, res, next, id) {
-    req.messagePromise = messageService.getMessages(id).then(messages => messages[0], e => Promise.reject(e));
+    req.messagePromise = messageService.getMessages(id)
+        .then(messages => messages[0], e => Promise.reject(e));
     next();
 });
 
@@ -23,10 +28,6 @@ router.route('/:id')
     .get(function(req, res, next) {
         req.messagePromise
             .then(message => res.json(message), error => res.send(error));
-    })
-    .put(function(req, res, next) {
-        messageService.addMessages(req.body)
-            .then(messages => res.json(messages[0]), error => res.send(error));
     })
     .delete(function(req, res, next) {
         req.messagePromise
