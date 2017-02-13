@@ -56,7 +56,7 @@ class IndexController {
     }
 
     persistMessages(...messages) {
-        return this.messageService.addMessages(...messages).then(messages => {
+        return this.messageService.addMessages(...messages).then(_ => {
             this.addMessages(...messages);
         });
     }
@@ -114,6 +114,7 @@ class IndexController {
         this.restService = new RestService(window.location+"messages");
         this.restMessageService = new MessageService(this.restService);
         window.restMessageService = this.restMessageService;
+        this.messageService = this.restMessageService;
     }
 
     _initServiceWorker() {
