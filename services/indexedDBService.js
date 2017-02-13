@@ -1,20 +1,10 @@
-let idb = require("idb");
+let idb = require('idb');
 
-class Service {
-    constructor(store, dbPromise, keypath = "id") {
+class IndexedDBService {
+    constructor(store, dbPromise, keypath = 'id') {
         this.store = store;
         this.dbPromise = dbPromise;
         this.keypath = keypath;
-    }
-
-    generateUUID() {
-        function r4() {
-            function r() {
-                return Math.floor(Math.random()*10)+'';
-            }
-            return r()+r()+r()+r();
-        }
-        return r4()+r4()+r4()+r4();
     }
 
     write(...data) {
@@ -22,7 +12,7 @@ class Service {
             return this.dbPromise.then(db => {
                 const tx = db.transaction(this.store, 'readwrite');
                 tx.objectStore(this.store).put(data);
-                return tx.complete;
+                return tx.complete.then(_ => data);
             });
         }));
     }
@@ -68,4 +58,4 @@ class Service {
     }
 }
 
-module.exports = Service;
+module.exports = IndexedDBService;

@@ -3,6 +3,7 @@ var BEANS_SUFFIX= 'beans/';
 var CLIENT_DEPLOY = DEPLOY_DIR + 'server/client/';
 var SERVER_DEPLOY = DEPLOY_DIR + 'server/';
 var SERVICES_SUFFIX= 'services/';
+var UTILS_SUFFIX= 'utils/';
 
 var gulp = require('gulp');
 var babel = require('gulp-babel');
@@ -15,21 +16,22 @@ var paths = {
     beans: 'beans/**/*.js',
     client: 'client/**/*.js',
     server: 'server/**/*.js',
-    services: 'services/**/*.js'
+    services: 'services/**/*.js',
+    utils: 'utils/**/*.js'
 };
 
 gulp.task('default', ['server', 'client']);
-gulp.task('beans', ['move:beans']); 
 gulp.task('client', ['move:client']);
 gulp.task('server', ['move:server']); 
 gulp.task('services', ['move:services']); 
 
 gulp.task('move:beans', ['jsLint:beans'], move([paths.beans], DEPLOY_DIR+BEANS_SUFFIX));
 gulp.task('move:client', ['jsLint:services', 'jsLint:beans', 'transpile:client', 'browserify'], move([paths.client, './client/index.html', './client/favicon.ico'], CLIENT_DEPLOY));
-gulp.task('move:server', ['jsLint:server', 'move:beans', 'move:services:server'], move([paths.server], SERVER_DEPLOY));
+gulp.task('move:server', ['jsLint:server', 'move:beans', 'move:services:server', 'move:utils:server'], move([paths.server], SERVER_DEPLOY));
 gulp.task('move:services', ['move:services:server', 'move:services:client']);
 gulp.task('move:services:server', ['jsLint:services'], move([paths.services], DEPLOY_DIR+SERVICES_SUFFIX));
 gulp.task('move:services:client', ['jsLint:services', 'transpile:services'], move([paths.services], CLIENT_DEPLOY+SERVICES_SUFFIX));
+gulp.task('move:utils:server', ['jsLint:utils'], move([paths.utils], DEPLOY_DIR+UTILS_SUFFIX));
 
 function move(src, dest) {
     return function() {
@@ -66,6 +68,7 @@ gulp.task('jsLint:server', jsLint(paths.server));
 gulp.task('jsLint:services', jsLint(paths.services));
 gulp.task('jsLint:beans', jsLint(paths.beans));
 gulp.task('jsLint:client', jsLint(paths.client));
+gulp.task('jsLint:utils', jsLint(paths.utils));
 
 function jsLint(filePath) {
     return function() {

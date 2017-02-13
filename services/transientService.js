@@ -1,21 +1,14 @@
+var UUIDUtils = require('../utils/uuidUtils.js');
+
 class TransientService {
     constructor() {
         this.objectStore = new Map();
     }
 
-    generateUUID() {
-        function r4() {
-            function r() {
-                return Math.floor(Math.random()*10)+'';
-            }
-            return r()+r()+r()+r();
-        }
-        return r4()+r4()+r4()+r4();
-    }
-
     write(...data) {
         return Promise.all(data.map(data => {
-            data.id = this.generateUUID();
+            console.log("Transient service saving: "+JSON.stringify(data));
+            data.id = UUIDUtils.generateUUID();
             data.version = 1;
             this.objectStore.set(data.id, data);
             return data;

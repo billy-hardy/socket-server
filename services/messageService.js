@@ -1,4 +1,5 @@
-var Message = require("../beans/message.js");
+var Message = require('../beans/message.js');
+var UUIDUtils = require('../utils/uuidUtils.js');
 
 class MessageService {
     constructor(baseService) {
@@ -20,17 +21,14 @@ class MessageService {
     }
 
     addMessages(...messages) {
-        return Promise.all(messages.map(message => {
+        messages = messages.map(message => {
             if(!message.id) {
-                message.id = this.service.generateUUID();
+                message.id = UUIDUtils.generateUUID();
                 message.date = new Date().valueOf();
             }
-            return this.service.write(message).then(() => {
-                return Promise.resolve(message);
-            }, e => {
-                return Promise.reject(e);
-            });
-        }));
+            return message;
+        });
+        return this.service.write(...messages);
     }
 
     deleteMessages(...ids) {

@@ -2,9 +2,10 @@ var io = require('socket.io-client');
 var Handlebars = require("handlebars");
 var idb = require("idb");
 
-var Service = require("../services/service.js");
+var IndexedDBService = require("../services/indexedDBService.js");
 var UserService = require("../services/userService.js");
 var MessageService = require("../services/messageService.js");
+var RestService = require("../services/restService.js");
 
 var User = require("../beans/user.js");
 var Message = require("../beans/message.js");
@@ -104,12 +105,15 @@ class IndexController {
         });
 
         this.userStore = "user";
-        this._userServiceInternal = new Service(this.userStore, this.dbPromise, this.keypath);
+        this._userServiceInternal = new IndexedDBService(this.userStore, this.dbPromise, this.keypath);
         this.userService = new UserService(this._userServiceInternal);
 
         this.messageStore = "message";
-        this._messageServiceInternal = new Service(this.messageStore, this.dbPromise, this.keypath);
+        this._messageServiceInternal = new IndexedDBService(this.messageStore, this.dbPromise, this.keypath);
         this.messageService = new MessageService(this._messageServiceInternal);
+        this.restService = new RestService(window.location+"messages");
+        this.restMessageService = new MessageService(this.restService);
+        window.restMessageService = this.restMessageService;
     }
 
     _initServiceWorker() {
