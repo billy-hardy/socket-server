@@ -1,12 +1,12 @@
-var Server = require('socket.io');
+var express = require('express');
+var app = express();
+var server = require('http').Server(app);
+var bodyParser = require('body-parser');
 
-var app = require('http').createServer(handler);
-var io = new Server(app);
-var fs = require('fs');
+var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
-app.listen(port);
-console.log("Deploying on port " + port);
+var messageRouter = require('./routes/messages.js');
 
 var socketIdUserMap = {}; 
 
@@ -34,21 +34,9 @@ var chat = io
         });
     });
 
-function handler(req, res) {
-    var path = '/client' + req.url;
-    if(path.charAt(path.length-1) === '/') {
-        path += 'index.html';
-    } 
-    var filename = __dirname + path;
-    fs.readFile(filename, 
-        function(err, data) {
-            if(err) {
-                console.error('Error loading ' + path + ': ' + err);
-                res.writeHead(500);
-                return res.end('Error loading index.html');
-            }
-            console.log('Serving: ' + path);
-            res.writeHead(200);
-            res.end(data);
-        });
-}
+app.use(bodyParser.json());
+app.use('/', express.static('client'));
+app.use('/messages', messageRouter);
+
+server.listen(port);
+console.log("Deploying on port " + port);
