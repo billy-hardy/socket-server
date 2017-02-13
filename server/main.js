@@ -7,6 +7,7 @@ var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
 var messageRouter = require('./routes/messages.js');
+var usersRouter = require('./routes/users.js');
 
 var socketIdUserMap = {}; 
 
@@ -47,6 +48,7 @@ function errorLogger(handler) {
 app.use(bodyParser.json());
 app.use('/', express.static('client'));
 app.use('/messages', messageRouter);
+app.use('/users', usersRouter);
 
 server.listen(port);
 console.log("Deploying on port " + port);
