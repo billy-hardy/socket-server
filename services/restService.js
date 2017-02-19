@@ -37,6 +37,20 @@ class RestService {
         return this._constructRequest(this.baseUrl, 'get');
     }
 
+    getByAttr(props) {
+        return this.getAll().then(objs => {
+            return objs.filter(obj => {
+                let ret = true;
+                for(let attr in props) {
+                    if(props.hasOwnProperty(attr)) {
+                        ret = ret && obj[attr] === props[attr];
+                    }
+                }
+                return ret;
+            });
+        });
+    }
+
     delete(id) {
         return this._constructRequest(this.baseUrl+'/'+id, 'delete');
     }

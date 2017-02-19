@@ -58,6 +58,20 @@ class IndexedDBService {
                 .objectStore(this.store).getAll();
         });
     }
+
+    getByAttr(props) {
+        return this.getAll().then(objs => {
+            return objs.filter(obj => {
+                let ret = true;
+                for(let attr in props) {
+                    if(props.hasOwnProperty(attr)) {
+                        ret = ret && obj[attr] === props[attr];
+                    }
+                }
+                return ret;
+            });
+        });
+    }
 }
 
 module.exports = IndexedDBService;
