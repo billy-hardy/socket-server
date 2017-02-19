@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var TransientService = require('../../services/transientService.js');
 var UserService = require('../../services/userService.js');
-var UserAuth = require('../../services/userAuthService.js');
-var transientService = new TransientService();
+var userAuth = require('../userAuth.js');
+var transientService = userAuth.userService;
+var userAuthService = userAuth.userAuthService;
 var userService = new UserService(transientService);
-var userAuthService = new UserAuth(transientService);
 
 router.route('/')
     .get(function(req, res, next) {

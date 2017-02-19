@@ -9,6 +9,9 @@ var port = process.env.PORT || 3000;
 var messageRouter = require('./routes/messages.js');
 var usersRouter = require('./routes/users.js');
 
+var userAuth = require('../userAuth.js');
+var userAuthService = userAuth.userAuthService;
+
 var socketIdUserMap = {}; 
 
 var chat = io
@@ -49,6 +52,18 @@ app.use(bodyParser.json());
 app.use('/', express.static('client'));
 app.use('/messages', messageRouter);
 app.use('/users', usersRouter);
+app.use(function (req, res, next) {
+    if(req.originalUrl.includes("auth")) {
+        next();
+    }
+    let webClientToken = req.get("webClientToken");
+    userAuthService.isValidSession(webClientToken)
+        .then(user =>{
+            req.currentUser = user;
+            next();
+        })
+        .catch(_ => res.end());
+});
 
 server.listen(port);
 console.log("Deploying on port " + port);
