@@ -61,7 +61,7 @@ router.route('/by-username/:username')
 router.route('/auth/:username/:password')
     .post(function(req, res, next) {
         userAuthService.authenticate(req.username, req.passwordHash)
-            .then(webClientToken => res.json({webClientToken}))
+            .then(credentials => res.json(credentials))
             .catch(e => res.send(e));
     });
 

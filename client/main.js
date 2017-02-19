@@ -25,10 +25,11 @@ class IndexController {
 
     authenticate(username, password) {
         this.loggedIn = this.userService.authenticate(username, password);
-        return this.loggedIn.then(user => {
-            this.user = user;
-            this.socket.emit("user-login", user);
-            this.users.set(user.id, user);
+        return this.loggedIn.then(r => {
+            this.webClientToken = r.webClientToken;
+            this.user = r.user;
+            this.socket.emit("user-login", this.user);
+            this.users.set(this.user.id, this.user);
             this.indexView.updateUserList(this.users);
             this.messageService.getAllMessages().then(messages => {
                 this.addMessages(...messages);
@@ -119,12 +120,7 @@ class IndexController {
             };
             userRestService.prototype = Object.create(RestService.prototype);
             userRestService.prototype.authenticate = function(username, password) {
-                return this._constructRequest(this.baseUrl+'/auth/'+username+'/'+md5(password), 'post')
-                    .then(users=> users[0]);
-            };
-            userRestService.prototype.getByUsername = function(username) {
-                return this._constructRequest(this.baseUrl+'/by-username/'+username, 'get')
-                    .then(users=> users[0]);
+                return this._constructRequest(this.baseUrl+'/auth/'+username+'/'+md5(password), 'post');
             };
             this.userService = new UserService(new userRestService(window.location.origin+'/users'));
             this.messageService = new MessageService(new RestService(window.location.origin+"/messages"));
