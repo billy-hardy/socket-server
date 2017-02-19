@@ -2,7 +2,10 @@ var express = require('express');
 var router = express.Router();
 var TransientService = require('../../services/transientService.js');
 var UserService = require('../../services/userService.js');
-var userService = new UserService(new TransientService());
+var UserAuth = require('../../services/userAuthService.js');
+var transientService = new TransientService();
+var userService = new UserService(transientService);
+var userAuthService = new UserAuth(transientService);
 
 router.route('/')
     .get(function(req, res, next) {
@@ -38,6 +41,7 @@ router.route('/:id')
     });
 
 router.param('username', function(req, res, next, username) {
+    req.username = username;
     req.userPromise = userService.getByUsername(username);
     next();
 });
@@ -50,19 +54,15 @@ router.param('password', function(req, res, next, passwordHash) {
 router.route('/by-username/:username')
     .get(function(req, res, next) {
         req.userPromise
-            .then(users => res.json(users), error => res.send(error));
+            .then(users => res.json(users))
+            .catch(error => res.send(error));
     });
 
 router.route('/auth/:username/:password')
     .post(function(req, res, next) {
-        req.userPromise
-            .then(user => {
-                if(user && user.passwordHash === req.passwordHash) {
-                    return user;
-                }
-                return Promise.reject("Invalid Username/Password");
-            }, _ => Promise.reject("Invalid Username/Password"))
-            .then(user => res.json(user), e => res.send(e));
+        userAuthService.authenticate(req.username, req.passwordHash)
+            .then(webClientToken => res.json({webClientToken}))
+            .catch(e => res.send(e));
     });
 
 module.exports = router;
