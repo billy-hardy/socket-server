@@ -14,14 +14,25 @@ class UserAuthService {
             if(authenticated.length === 1) {
                 let user = authenticated[0];
                 let webClientToken = UUIDUtils.generateUUID();
-                let currentTokens = this.webClientTokenMap.get(user.username) || [];
-                currentTokens.push(webClientToken);
-                this.webClientTokenMap.set(user.username, currentTokens);
+                this.webClientTokenMap.set(webClientToken, user);
                 return {webClientToken, user};
             }
             return Promise.reject("Invalid username/password");
         });
     }
+
+    removeSession(webClientToken) {
+        return Promise.resolve(this.webClientTokenMap.delete(webClientToken));
+    }
+
+    isValidSession(webClientToken) {
+        let user = this.webClientTokenMap.get(webClientToken);
+        if(!user) {
+            return Promise.reject("Invalid webClientToken");
+        }
+        return Promise.resolve(user);
+    }
+        
 }
 
 module.exports = UserAuthService;
