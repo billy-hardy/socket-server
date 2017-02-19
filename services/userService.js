@@ -6,17 +6,7 @@ class UserService {
     }
 
     authenticate(username, password) {
-        return this.getByUsername(username).then(users => {
-            var loggedInUsers = users.filter(user => {
-                return user.checkPassword(password);
-            });
-            if(loggedInUsers.length > 0) {
-                return loggedInUsers[0];
-            }
-            return Promise.reject("Invalid Username/Password");
-        }, _ => {
-            return Promise.reject("Invalid Username/Password");
-        });
+        return this.service.authenticate(username, password);
     }
 
     getAllUsers() {
@@ -28,13 +18,11 @@ class UserService {
     }
 
     getById(id) {
-        return this.getAllUsers()
-            .then(users => users.filter(user => user.id === id));
+        return this.service.getById(id);
     }
 
     getByUsername(username) {
-        return this.getAllUsers()
-            .then(users => users.filter(user => user.username === username));
+        return this.service.getByAttr({username});
     }
 
     addUsers(...users) {
