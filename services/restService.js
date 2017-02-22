@@ -7,7 +7,8 @@ class RestService {
         let config = {
             method: method,
             headers: new Headers({
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'webClientToken': this.webClientToken
             })
         };
         if(body) {
@@ -38,17 +39,13 @@ class RestService {
     }
 
     getByAttr(props) {
-        return this.getAll().then(objs => {
-            return objs.filter(obj => {
-                let ret = true;
-                for(let attr in props) {
-                    if(props.hasOwnProperty(attr)) {
-                        ret = ret && obj[attr] === props[attr];
-                    }
-                }
-                return ret;
-            });
-        });
+        let queries = [];
+        for(let attr in props) {
+            if(props.hasOwnProperty(attr)) {
+                queries.push(attr+'='+props[attr]);
+            }
+        }
+        return this._constructRequest(this.baseUrl+'/?'+queries.join('&'), 'get');
     }
 
     delete(id) {

@@ -1,19 +1,44 @@
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
 var bodyParser = require('body-parser');
-
-var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
 var messageRouter = require('./routes/messages.js');
 var usersRouter = require('./routes/users.js');
 
-var userAuth = require('../userAuth.js');
+app.use(bodyParser.json());
+app.use('/', express.static('client'));
+function auth(req, res, next) {
+    console.log("Accessing: "+req.originalUrl+" with method: "+req.method);
+    if(req.originalUrl.includes("auth") || req.originalUrl.includes("/users")) {
+        next();
+        console.log("here");
+        return;
+    }
+    let webClientToken = req.get("webClientToken");
+    userAuthService.isValidSession(webClientToken)
+        .then(user => {
+            req.currentUser = user;
+            console.log("authenticated " + user.username);
+            next();
+        })
+        .catch(_ => res.end());
+}
+
+app.use(auth);
+//usersRouter.use(auth);
+
+app.use('/messages', messageRouter);
+app.use('/users', usersRouter);
+
+var server = require('http').Server(app);
+
+var userAuth = require('./userAuth.js');
 var userAuthService = userAuth.userAuthService;
 
 var socketIdUserMap = {}; 
 
+var io = require('socket.io')(server);
 var chat = io
     .of('/chat')
     .on('connection', function (socket) {
@@ -48,22 +73,6 @@ function errorLogger(handler) {
     };
 }
 
-app.use(bodyParser.json());
-app.use('/', express.static('client'));
-app.use('/messages', messageRouter);
-app.use('/users', usersRouter);
-app.use(function (req, res, next) {
-    if(req.originalUrl.includes("auth")) {
-        next();
-    }
-    let webClientToken = req.get("webClientToken");
-    userAuthService.isValidSession(webClientToken)
-        .then(user =>{
-            req.currentUser = user;
-            next();
-        })
-        .catch(_ => res.end());
-});
 
 server.listen(port);
 console.log("Deploying on port " + port);

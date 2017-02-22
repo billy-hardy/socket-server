@@ -7,9 +7,9 @@ class TransientService {
 
     write(...data) {
         return Promise.all(data.map(data => {
-            console.log("Transient service saving: "+JSON.stringify(data));
             data.id = UUIDUtils.generateUUID();
             data.version = 1;
+            console.log("Transient service saving: "+JSON.stringify(data));
             this.objectStore.set(data.id, data);
             return data;
         }));
@@ -19,6 +19,7 @@ class TransientService {
         return Promise.all(data.map(data => {
             data.version = data.version+1;
             this.objectStore.set(data.id, data);
+            console.log("Transient service saving: "+JSON.stringify(data));
             return data;
         }));
     }

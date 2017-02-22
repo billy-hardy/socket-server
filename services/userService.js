@@ -21,6 +21,10 @@ class UserService {
         return this.service.getById(id);
     }
 
+    getByAttr(props) {
+        return this.service.getByAttr(props);
+    }
+
     getByUsername(username) {
         return this.service.getByAttr({username});
     }

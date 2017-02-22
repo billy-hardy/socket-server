@@ -27,6 +27,10 @@ class IndexController {
         this.loggedIn = this.userService.authenticate(username, password);
         return this.loggedIn.then(r => {
             this.webClientToken = r.webClientToken;
+            if(this.serviceType === "rest") {
+                this.userRestService.webClientToken = this.webClientToken;
+                this.messageRestService.webClientToken = this.webClientToken;
+            }
             this.user = r.user;
             this.socket.emit("user-login", this.user);
             this.users.set(this.user.id, this.user);
@@ -100,6 +104,7 @@ class IndexController {
 
     _initDBs() {
         if(window.location.search.includes("local")) {
+            this.serviceType = "indexedDB";
             this.keypath = "id";
             this.dbPromise = idb.open('dc2f', 2, upgradeDB => {
                 upgradeDB.createObjectStore(this.userStore, {keyPath: this.keypath});
@@ -115,15 +120,18 @@ class IndexController {
             this.messageService = new MessageService(this._messageServiceInternal);
         }
         else {
-            let userRestService = function(baseUrl) {
+            this.serviceType = "rest";
+            let UserRestService = function(baseUrl) {
                 this.baseUrl = baseUrl;
             };
-            userRestService.prototype = Object.create(RestService.prototype);
-            userRestService.prototype.authenticate = function(username, password) {
+            UserRestService.prototype = Object.create(RestService.prototype);
+            UserRestService.prototype.authenticate = function(username, password) {
                 return this._constructRequest(this.baseUrl+'/auth/'+username+'/'+md5(password), 'post');
             };
-            this.userService = new UserService(new userRestService(window.location.origin+'/users'));
-            this.messageService = new MessageService(new RestService(window.location.origin+"/messages"));
+            this.userRestService = new UserRestService(window.location.origin+'/users');
+            this.userService = new UserService(this.userRestService);
+            this.messageRestService = new RestService(window.location.origin+"/messages");
+            this.messageService = new MessageService(this.messageRestService);
         }
         window.messageService = this.messageService;
     }

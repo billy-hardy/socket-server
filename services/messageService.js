@@ -19,6 +19,10 @@ class MessageService {
         }));
     }
 
+    getByAttr(props) {
+        return this.service.getByAttr(props);
+    }
+
     addMessages(...messages) {
         messages = messages.filter(message => {
             return !message.id;

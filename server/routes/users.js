@@ -5,10 +5,17 @@ var userAuth = require('../userAuth.js');
 var transientService = userAuth.userService;
 var userAuthService = userAuth.userAuthService;
 var userService = new UserService(transientService);
+var url = require('url');
 
 router.route('/')
     .get(function(req, res, next) {
-        userService.getAllUsers()
+        let queryStrings = Array.from(url.parse(req.originalUrl).query.split('&'));
+        let props = {};
+        queryStrings.forEach(search => {
+            [attr, val] = search.split('=');
+            props[attr] = val;
+        });
+        userService.getByAttr(props)
             .then(users => res.json(users), e => res.send(e));
     })
     .put(function(req, res, next) {
@@ -37,6 +44,17 @@ router.route('/:id')
                     .then(success => res.json(user), e = Promise.reject(e));
             })
             .catch(error => res.send(error));
+    });
+
+router.param('attr', function(req, res, next, attr) {
+    req.attr = attr;
+    next();
+});
+
+router.route('/by/:attr')
+    .get(function(req, res, next) {
+        userService.getByAttr(req.attr)
+            .then(users => res.json(users), e => res.send(e));
     });
 
 router.param('username', function(req, res, next, username) {
