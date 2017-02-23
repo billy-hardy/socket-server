@@ -2,6 +2,8 @@ var TransientService = require("./transientService.js");
 var md5 = require("blueimp-md5");
 var UUIDUtils = require('../utils/uuidUtils.js');
 
+var SESSION_EXPIRE_TIME = 5*60*1000;
+
 class UserAuthService {
     constructor(service) {
         this.service = service;
@@ -14,6 +16,7 @@ class UserAuthService {
             if(authenticated.length === 1) {
                 let user = authenticated[0];
                 let webClientToken = UUIDUtils.generateUUID();
+                user.lastActive = new Date().valueOf();
                 this.webClientTokenMap.set(webClientToken, user);
                 return {webClientToken, user};
             }
@@ -30,6 +33,12 @@ class UserAuthService {
         if(!user) {
             return Promise.reject("Invalid webClientToken");
         }
+        if(user.lastActive + SESSION_EXPIRE_TIME < new Date().valueOf()) {
+            this.removeSession(webClientToken);
+            return Promise.reject("WebClientToken expired");
+        }
+        user.lastActive = new Date().valueOf();
+        this.webClientTokenMap.set(webClientToken, user);
         return Promise.resolve(user);
     }
         
