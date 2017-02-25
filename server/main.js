@@ -12,7 +12,6 @@ function auth(req, res, next) {
     console.log("Accessing: "+req.originalUrl+" with method: "+req.method);
     if(req.originalUrl.includes("auth") || req.originalUrl.includes("/users")) {
         next();
-        console.log("here");
         return;
     }
     let webClientToken = req.get("webClientToken");
@@ -22,7 +21,10 @@ function auth(req, res, next) {
             console.log("authenticated " + user.username);
             next();
         })
-        .catch(_ => res.end());
+        .catch(e => {
+            console.log(e);
+            res.end(e)
+        });
 }
 
 app.use(auth);
