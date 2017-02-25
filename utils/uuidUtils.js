@@ -1,12 +1,12 @@
 class UUIDUtils {
     static generateUUID() {
-        function r4() {
-            function r() {
-                return Math.floor(Math.random()*10)+'';
+        function r16() {
+            function r4() {
+                return (Math.random()*0xFFFF<<0).toString(16);
             }
-            return r()+r()+r()+r();
+            return r4()+r4()+r4()+r4();
         }
-        return r4()+r4()+r4()+r4();
+        return r16()+r16()+r16()+r16();
     }
 }
 
