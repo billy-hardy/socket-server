@@ -20,6 +20,10 @@ class DelegateRestService extends DelegateService {
     _constructRequest(url, method, body) {
         return this.service._constructRequest(url, method, body);
     }
+    
+    sendRequest(req) {
+        return this.service.sendRequest(req);
+    }
 }
 
 module.exports = DelegateRestService;

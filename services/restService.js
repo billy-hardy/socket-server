@@ -1,7 +1,6 @@
 class RestService {
-    constructor(baseUrl, fetch) {
+    constructor(baseUrl) {
         this.baseUrl = baseUrl;
-        this.fetch = fetch;
     }
 
     _constructRequest(url, method, body) {
@@ -15,27 +14,35 @@ class RestService {
         if(body) {
             config.body = body;
         }
-        return this.fetch(url, config).then(res => res.json());
+        return {url, config};
+    }
+
+    sendRequest({url, config}) {
+        return fetch(url, config).then(res => res.json());
     }
 
     write(...data) {
         return Promise.all(data.map(data => {
-            return this._constructRequest(this.baseUrl, 'post', JSON.stringify(data));
+            let req = this._constructRequest(this.baseUrl, 'post', JSON.stringify(data));
+            return this.sendRequest(req);
         }));
     }
 
     update(...data) {
         return Promise.all(data.map(data => {
-            return this._constructRequest(this.baseUrl, 'put', JSON.stringify(data));
+            let req = this._constructRequest(this.baseUrl, 'put', JSON.stringify(data));
+            return this.sendRequest(req);
         }));
     }
 
     getById(id) {
-        return this._constructRequest(this.baseUrl+'/'+id, 'get');
+        let req = this._constructRequest(this.baseUrl+'/'+id, 'get');
+        return this.sendRequest(req);
     }
 
     getAll() {
-        return this._constructRequest(this.baseUrl, 'get');
+        let req = this._constructRequest(this.baseUrl, 'get');
+        return this.sendRequest(req);
     }
 
     getByAttr(props) {
@@ -45,11 +52,13 @@ class RestService {
                 queries.push(attr+'='+props[attr]);
             }
         }
-        return this._constructRequest(this.baseUrl+'/?'+queries.join('&'), 'get');
+        let req = this._constructRequest(this.baseUrl+'/?'+queries.join('&'), 'get');
+        return this.sendRequest(req);
     }
 
     delete(id) {
-        return this._constructRequest(this.baseUrl+'/'+id, 'delete');
+        let req = this._constructRequest(this.baseUrl+'/'+id, 'delete');
+        return this.sendRequest(req);
     }
 }
 
