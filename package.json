@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "description": "",
   "main": "main.js",
+  "engine": {
+      "node": "6.9.4"
+  },
   "scripts": {
     "heroku-postbuild": "gulp",
     "start": "cd dist/server; node main.js"
