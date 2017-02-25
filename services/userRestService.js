@@ -8,7 +8,8 @@ class UserRestService extends DelegateRestService {
     }
 
     authenticate(username, password) {
-        return this._constructRequest(this.baseUrl+'/auth/'+username+'/'+md5(password), 'post');
+        let req = this._constructRequest(this.baseUrl+'/auth/'+username+'/'+md5(password), 'post');
+        return this.sendRequest(req);
     }
 }
 

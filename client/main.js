@@ -6,6 +6,7 @@ var IndexedDBService = require("../services/indexedDBService.js");
 var UserService = require("../services/userService.js");
 var MessageService = require("../services/messageService.js");
 var RestService = require("../services/restService.js");
+var UserRestService = require("../services/userRestService.js");
 var md5 = require("blueimp-md5");
 
 var User = require("../beans/user.js");
@@ -121,16 +122,9 @@ class IndexController {
         }
         else {
             this.serviceType = "rest";
-            let UserRestService = function(baseUrl) {
-                this.baseUrl = baseUrl;
-            };
-            UserRestService.prototype = Object.create(RestService.prototype);
-            UserRestService.prototype.authenticate = function(username, password) {
-                return this._constructRequest(this.baseUrl+'/auth/'+username+'/'+md5(password), 'post');
-            };
-            this.userRestService = new UserRestService(window.location.origin+'/users');
+            this.userRestService = new UserRestService(new RestService(window.location.origin+'/users', window.fetch));
             this.userService = new UserService(this.userRestService);
-            this.messageRestService = new RestService(window.location.origin+"/messages");
+            this.messageRestService = new RestService(window.location.origin+"/messages", window.fetch);
             this.messageService = new MessageService(this.messageRestService);
         }
         window.messageService = this.messageService;
