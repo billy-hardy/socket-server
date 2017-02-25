@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "engine": {
-      "node": "6.9.4"
+    "node": "6.9.4"
   },
   "scripts": {
     "heroku-postbuild": "gulp",
@@ -23,6 +23,7 @@
   "dependencies": {
     "blueimp-md5": "^2.6.0",
     "body-parser": "^1.16.1",
+    "express": "^4.14.1",
     "gulp-uglifyjs": "^0.6.2",
     "handlebars": "^4.0.6",
     "idb": "^2.0.0",
