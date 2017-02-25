@@ -1,21 +1,21 @@
 class RestService {
-    constructor(baseUrl) {
+    constructor(baseUrl, fetch) {
         this.baseUrl = baseUrl;
+        this.fetch = fetch;
     }
 
     _constructRequest(url, method, body) {
         let config = {
             method: method,
-            headers: new Headers({
+            headers: {
                 'Content-Type': 'application/json',
                 'webClientToken': this.webClientToken
-            })
+            } 
         };
         if(body) {
             config.body = body;
         }
-        let request = new Request(url, config);
-        return fetch(request).then(res => res.json());
+        return this.fetch(url, config).then(res => res.json());
     }
 
     write(...data) {
