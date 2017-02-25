@@ -37,7 +37,7 @@ function move(src, dest) {
     return function() {
         return gulp.src(src)
             .pipe(gulp.dest(dest));
-    }
+    };
 }
 
 
@@ -52,7 +52,7 @@ function transpile(src, dest) {
             }))
             .pipe(uglify())
             .pipe(gulp.dest(dest));
-    }
+    };
 }
 
 gulp.task('browserify', ['jsLint:client'], function() {
@@ -74,11 +74,16 @@ function jsLint(filePath) {
     return function() {
         return gulp.src([filePath])
             .pipe(jshint({
-                eqeqeq: true,
-                esversion: 6
+                "browserify": true,
+                "curly": true,
+                "eqeqeq": true,
+                "esversion": 6,
+//                "newcap": true,
+//                "undef": true,
+//                "unused": true
             }))
             .pipe(jshint.reporter('jshint-stylish'))
             .pipe(jshint.reporter('fail'));
-    }
+    };
 }
 
