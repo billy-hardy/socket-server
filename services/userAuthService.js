@@ -23,10 +23,6 @@ class UserAuthService {
         });
     }
 
-    removeSession(webClientToken) {
-        return Promise.reject();
-    }
-
     isValidSession(webClientToken) {
         return new Promise((resolve, reject) => {
             jwt.verify(webClientToken, config.secret, (err, decoded) => {
