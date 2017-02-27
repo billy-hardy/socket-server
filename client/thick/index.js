@@ -1,7 +1,7 @@
 const readline = require("readline");
 const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+    input: process.stdin,
+    output: process.stdout
 });
 
 var UserService = require("../../services/userService.js");
@@ -26,21 +26,53 @@ rl.question("Username: ", (username) => {
                 console.log(JSON.stringify(user));
                 userRestService.webClientToken = r.webClientToken;
                 messageRestService.webClientToken = r.webClientToken;
-                chat();
+                options();
             });
     });
 });
+
+function options() {
+    console.log("S: send a message");
+    console.log("G: get all messages");
+    console.log("E: exit");
+    rl.question("Select a command: ", command => {
+        if(command === "S" || command === "s") {
+            chat();
+        }
+        else if(command === "G" || command === "g") {
+            getMessages();
+        }
+        else if(command === "E" || command === "e") {
+            process.exit();
+        }
+        else {
+            options();
+        }
+    });
+}
+
+function getMessages() {
+    messageService.getAllMessages()
+        .then(messages => {
+            messages.forEach(message => {
+                console.log(message.toString());
+            });
+            options();
+        })
+        .catch(options);
+}
 
 function sendMessage(content) {
     let message = new Message(user, content);
     messageService.addMessages(message)
         .then(messages => {
             console.log("success");
+            options();
         }, e => {
             console.error(e);
+            options();
         });
 }
-
 
 function chat() {
     rl.question("Input: ", sendMessage);
