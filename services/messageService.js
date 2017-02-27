@@ -1,26 +1,19 @@
 var Message = require('../beans/message.js');
+var DelegateService = require('./delegateService');
 
-class MessageService {
-    constructor(baseService) {
-        this.service = baseService;
-    }
-
+class MessageService extends DelegateService {
     getAllMessages() {
-        return this.service.getAll().then(messages => {
+        return this.getAll().then(messages => {
             return messages.map(message => Message.fromJSON(message));
         }, e => Promise.reject(e));
     }
 
     getMessages(...ids) {
         return Promise.all(ids.map(id => {
-            this.service.getById(id).then(json => {
+            this.getById(id).then(json => {
                 return Message.fromJSON(json);
             });
         }));
-    }
-
-    getByAttr(props) {
-        return this.service.getByAttr(props);
     }
 
     addMessages(...messages) {
@@ -30,12 +23,12 @@ class MessageService {
             message.date = new Date().valueOf();
             return message;
         });
-        return this.service.write(...messages);
+        return this.write(...messages);
     }
 
     deleteMessages(...ids) {
         return Promise.all(ids.map(id => {
-            return this.service.delete(id);
+            return this.delete(id);
         })); 
     }
 }

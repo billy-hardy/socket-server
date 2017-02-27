@@ -1,32 +1,17 @@
 var User = require("../beans/user.js");
+var DelegateService = require("./delegateService.js");
 
-class UserService {
-    constructor(baseService) {
-        this.service = baseService;
-    }
-
-    authenticate(username, password) {
-        return this.service.authenticate(username, password);
-    }
-
+class UserService extends DelegateService {
     getAllUsers() {
-        return this.service.getAll().then(users => {
+        return this.getAll().then(users => {
             return users.map(user => {
                 return User.fromJSON(user);
             });
         });
     }
 
-    getById(id) {
-        return this.service.getById(id);
-    }
-
-    getByAttr(props) {
-        return this.service.getByAttr(props);
-    }
-
     getByUsername(username) {
-        return this.service.getByAttr({username});
+        return this.getByAttr({username});
     }
 
     addUsers(...users) {
@@ -36,7 +21,7 @@ class UserService {
                 if(existingUsers.length > 0) {
                     return Promise.reject("User, " + user.username + ", already in use");
                 }
-                return this.service.write(user);
+                return this.write(user);
             });
         }));
     }
@@ -48,13 +33,13 @@ class UserService {
                 if(existingUsers.length > 0) {
                     return Promise.reject("User, " + user.username + ", already in use");
                 }
-                return this.service.write(user);
+                return this.write(user);
             });
         }));
     }
 
     deleteUser(userId) {
-        return this.service.delete(userId);
+        return this.delete(userId);
     }
 }
 

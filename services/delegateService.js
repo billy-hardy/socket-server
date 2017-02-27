@@ -1,4 +1,8 @@
 class DelegateService {
+    constructor(baseService) {
+        this.service = baseService;
+    }
+
     write(...data) {
         return this.service.write(...data);
     }
@@ -21,6 +25,10 @@ class DelegateService {
 
     delete(id) {
         return this.service.delete(id);
+    }
+    
+    authenticate(username, password) {
+        return this.service.authenticate(username, password);
     }
 }
 
