@@ -1,3 +1,3 @@
-module.exports = {
-    'secret': 'ilovescotchyscotch',
-};
+let secret = process.env.PRIVATE_KEY || 'ilovescotchyscotch';
+
+module.exports = {secret};
