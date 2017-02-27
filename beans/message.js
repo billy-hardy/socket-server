@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 class Message {
     constructor(user, content) {
         this.user = user;
@@ -11,6 +13,10 @@ class Message {
         m.id = message.id;
         m.date = message.date;
         return m;
+    }
+
+    toString() {
+        return this.user.username + " ("+moment(this.date).fromNow()+"): " + this.content;
     }
 }
 
