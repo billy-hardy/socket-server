@@ -1,13 +1,14 @@
 var TransientService = require("./transientService.js");
 var md5 = require("blueimp-md5");
 var UUIDUtils = require('../utils/uuidUtils.js');
+var jwt = require('jsonwebtoken');
+var config = require('../config.js');
 
 var SESSION_EXPIRE_TIME = 5*60*1000;
 
 class UserAuthService {
     constructor(service) {
         this.service = service;
-        this.webClientTokenMap = new Map();
     }
 
     authenticate(username, passwordHash) {
@@ -15,33 +16,26 @@ class UserAuthService {
             let authenticated = users.filter(user => user.passwordHash === passwordHash);
             if(authenticated.length === 1) {
                 let user = authenticated[0];
-                let webClientToken = UUIDUtils.generateUUID();
-                user.lastActive = new Date().valueOf();
-                this.webClientTokenMap.set(webClientToken, user);
+                let webClientToken = jwt.sign(user.id, config.secret);
                 return {webClientToken, user};
             }
             return Promise.reject("Invalid username/password");
         });
     }
 
-    removeSession(webClientToken) {
-        return Promise.resolve(this.webClientTokenMap.delete(webClientToken));
+    isValidSession(webClientToken) {
+        return new Promise((resolve, reject) => {
+            jwt.verify(webClientToken, config.secret, (err, decoded) => {
+                if (err) {
+                    reject({success: false, message: "Invalid webClientToken"});
+                }
+                else {
+                    resolve(this.service.getById(decoded));
+                }
+            });
+        });
     }
 
-    isValidSession(webClientToken) {
-        let user = this.webClientTokenMap.get(webClientToken);
-        if(!user) {
-            return Promise.reject("Invalid webClientToken");
-        }
-        if(user.lastActive + SESSION_EXPIRE_TIME < new Date().valueOf()) {
-            this.removeSession(webClientToken);
-            return Promise.reject("WebClientToken expired");
-        }
-        user.lastActive = new Date().valueOf();
-        this.webClientTokenMap.set(webClientToken, user);
-        return Promise.resolve(user);
-    }
-        
 }
 
 module.exports = UserAuthService;
