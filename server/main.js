@@ -28,7 +28,6 @@ function auth(req, res, next) {
 }
 
 app.use(auth);
-//usersRouter.use(auth);
 
 app.use('/messages', messageRouter);
 app.use('/users', usersRouter);
