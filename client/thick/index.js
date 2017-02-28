@@ -1,4 +1,4 @@
-const URL = process.env.BASE_URL || "http://localhost:5000";
+const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
 
 const readline = require("readline");
 const rl = readline.createInterface({
@@ -11,9 +11,9 @@ var MessageService = require("../../services/messageService.js");
 var RestService = require("../../services/nodeRestService.js");
 var UserRestService = require("../../services/userRestService.js");
 
-var messageRestService = new RestService(URL+"/messages");
+var messageRestService = new RestService(BASE_URL+"/messages");
 var messageService = new MessageService(messageRestService);
-var userRestService = new UserRestService(new RestService(URL+"/users"));
+var userRestService = new UserRestService(new RestService(BASE_URL+"/users"));
 var userService = new UserService(userRestService);
 var user;
 
