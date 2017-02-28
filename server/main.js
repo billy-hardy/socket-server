@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 
 var messageRouter = require('./routes/messages.js');
 var usersRouter = require('./routes/users.js');

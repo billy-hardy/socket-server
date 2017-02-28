@@ -8,7 +8,8 @@
   },
   "scripts": {
     "heroku-postbuild": "gulp",
-    "start": "cd dist/server; node main.js"
+    "start": "cd dist/server; node main.js",
+    "debug": "cd dist/server; node --inspect main.js"
   },
   "repository": {
     "type": "git",
