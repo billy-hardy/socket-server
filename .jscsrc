@@ -1,0 +1,5 @@
+{
+    "preset": "node-style-guide",
+    "disallowDanglingUnderscores": false,
+    "maximumLineLength": 120
+}
