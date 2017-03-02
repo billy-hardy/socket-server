@@ -1,0 +1,6 @@
+{
+    "browserify": true,
+    "curly": true,
+    "eqeqeq": true,
+    "esversion": 6
+}

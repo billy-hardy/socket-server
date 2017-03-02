@@ -11,6 +11,7 @@ var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var uglify = require('gulp-uglifyjs');
+var jscs = require('gulp-jscs');
 
 var paths = {
     beans: 'beans/**/*.js',
@@ -73,17 +74,19 @@ gulp.task('jsLint:utils', jsLint(paths.utils));
 function jsLint(filePath) {
     return function() {
         return gulp.src([filePath])
-            .pipe(jshint({
-                "browserify": true,
-                "curly": true,
-                "eqeqeq": true,
-                "esversion": 6,
-//                "newcap": true,
-//                "undef": true,
-//                "unused": true
-            }))
+            .pipe(jshint())
             .pipe(jshint.reporter('jshint-stylish'))
             .pipe(jshint.reporter('fail'));
     };
 }
+
+gulp.task('jscs', function() {
+    var src = [];
+    for(var key in paths) {
+        src.push(paths[key]);
+    }
+    gulp.src(src, {base: './'})
+        .pipe(jscs({fix: true}))
+        .pipe(gulp.dest('./'));
+});
 
