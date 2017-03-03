@@ -26,6 +26,10 @@ class IndexController {
 
   authenticate(username, password) {
     this.loggedIn = this.userService.authenticate(username, password);
+    this.loggedIn
+          .catch(e => {
+              navigator.vibrate(200);
+          });
     return this.loggedIn.then(r => {
         this.webClientToken = r.webClientToken;
         if (this.serviceType === 'rest') {
@@ -40,8 +44,6 @@ class IndexController {
             this.addMessages(...messages);
           });
         return this.user;
-      }, e => {
-          navigator.vibrate(100);
       });
   }
 
