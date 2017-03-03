@@ -40,6 +40,8 @@ class IndexController {
             this.addMessages(...messages);
           });
         return this.user;
+      }, e => {
+          navigator.vibrate(100);
       });
   }
 
